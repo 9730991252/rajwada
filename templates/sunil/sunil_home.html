@@ -1,0 +1,82 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+{% load static %}
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add owner
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Owner Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST">{% csrf_token %} 
+                <div class="mb-3">
+                    <label for="name">Owner Name</label>
+                    <input type="text" name="name" placeholder="Name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="mobile">Mobile</label>
+                    <input type="number" name="mobile" placeholder="Mobile" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="pin">Pin</label>
+                    <input type="number" name="pin" placeholder="Pin" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="btn btn-primary" name="Add_owner">Add</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <div class="container">
+
+      <table class="table table-striped table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Mobile</th>
+                  <th scope="col">Pin</th>
+                  <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in owner %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{o.owner_name}}</td>
+                    <td>{{o.mobile}}</td>
+                    <td>{{o.pin}}</td>
+                    <td>
+                        <form class="" method="POST">{% csrf_token %} 
+                            <input type="hidden" name="id" value="{{o.id}}"> 
+                            {% if o.status == 1 %}
+                                <button class="btn btn-success" type="submit" name="active">Active</button>
+                            {% else %}
+                                <button class="btn btn-danger" type="submit" name="deactive">Deactive</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+</table>
+</div>
+
+{% endblock content %}

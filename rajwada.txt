@@ -1,0 +1,199 @@
+103.150.136.82
+
+_______________________________________
+
+cd rajwada
+git pull
+source venv/bin/activate
+python3 manage.py makemigrations
+python3 manage.py migrate
+systemctl daemon-reload
+systemctl restart rajwada.com.gunicorn
+exit
+
+cd rajwada
+git pull
+systemctl daemon-reload
+systemctl restart rajwada.com.gunicorn
+exit
+
+
+
+_______________________________________
+
+
+git clone https://github.com/9730991252/rajwada.git
+
+_______________________________________
+********** Create Virtual env *****
+
+virtualenv venv
+
+********** Activate Virtual env ****
+
+source venv/bin/activate
+
+
+****************migrations******
+python3 manage.py makemigrations
+
+*********** migrate ********
+
+python3 manage.py migrate
+
+
+***** install django ******
+
+pip install django
+
+******** Install Gunicorn ******
+ 
+pip install gunicorn
+
+*********** Deactivate Virtualenv *****
+
+deactivate
+
+clear
+************ Create System Socket File for Gunicorn *******
+
+Example:- sudo nano /etc/systemd/system/crenta.in.gunicorn.socket
+
+cd  /etc/systemd/system/
+
+sudo nano rajwada.com.gunicorn.socket
+
+
+
+[Unit]
+Description=rajwada.com.gunicorn socket
+
+[Socket]
+ListenStream=/run/rajwada.com.gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+
+
+************** Create System Service File for Gunicorn ******
+Syntax:- sudo nano /etc/systemd/system/your_domain.gunicorn.service
+Example:- sudo nano /etc/systemd/system/narayaniorder.com.gunicorn.service
+
+cd  /etc/systemd/system/
+
+sudo nano rajwada.com.gunicorn.service
+
+
+[Unit]
+Description=rajwada.com.gunicorn daemon
+Requires=rajwada.com.gunicorn.socket
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/rajwada
+ExecStart=/root/rajwada/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/rajwada.com.gunicorn.sock \
+          rajwada.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+----------------------------------------------------------------
+sudo systemctl start rajwada.com.gunicorn.socket
+
+sudo systemctl start rajwada.com.gunicorn.service
+
+
+-----------------------------------------------------------------
+
+sudo systemctl enable rajwada.com.gunicorn.socket
+
+sudo systemctl enable rajwada.com.gunicorn.service
+
+clear
+
+-----------------------------------------------------------------------
+
+sudo systemctl status rajwada.com.gunicorn.socket
+
+sudo systemctl status rajwada.com.gunicorn.service
+
+clear
+
+-------------------------------------------
+
+sudo systemctl daemon-reload
+sudo systemctl restart rajwada.com.gunicorn
+
+
+
+--------------------------------
+
+
+
+****************** Create Virtual Host File ******
+Syntax:- sudo nano /etc/nginx/sites-available/your_domain
+Example:- sudo nano /etc/nginx/sites-available/crenta.in
+
+
+cd /etc/nginx/sites-available
+
+sudo nano rajwada.com
+
+
+
+server{
+    listen 80;
+    listen [::]:80;
+
+    server_name 103.150.136.82 rajwada.tejorder.com www.rajwada.tejorder.com;
+    client_max_body_size 500M;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://unix:/run/rajwada.com.gunicorn.sock;
+    }    
+}
+
+-----------------------------------------------------
+
+
+########## Enable Virtual Host or Create Symbolic Link of Virtual Host File ########
+
+sudo ln -s /etc/nginx/sites-available/rajwada.com /etc/nginx/sites-enabled/rajwada.com
+
+
+%%%%%%%%%%%%%%%%%%%%% Check Configuration is Correct or Not %%%%%
+
+sudo nginx -t
+
+clear
+
+%%%%%%%%%%%% Restart Nginx %%%%%%%%%
+
+sudo service nginx restart
+
+
+********** restart ******
+
+sudo systemctl daemon-reload
+sudo systemctl restart rajwada.com.gunicorn
+
+clear
+
+--------------------------------------- ssl ------------------
+
+sudo certbot --nginx
+
+clear
+
+sudo certbot --nginx -d janmanasnews.com -d www.janmanasnews.com

@@ -1,0 +1,21 @@
+from django.db import models
+
+# Create your models here.
+class Owner(models.Model):
+    hotel_name = models.CharField(max_length=100,default='')
+    owner_name=models.CharField(max_length=100)
+    mobile=models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    hotel_address = models.CharField(max_length=100,default='')
+    status=models.IntegerField(default=1)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    
+class Bill(models.Model):
+    added_by = models.ForeignKey(Owner,on_delete=models.PROTECT,null=True)
+    name = models.CharField(max_length=100)
+    amount = models.FloatField()
+    person_count = models.IntegerField()
+    drow_status = models.IntegerField(default=0)
+    scan_url = models.CharField(max_length=100)
+    status = models.IntegerField(default=1)
+    added_date = models.DateTimeField(auto_now_add=True)

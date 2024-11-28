@@ -1,0 +1,44 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<style>
+    form{
+        padding: 10px;
+        margin: auto;
+        width: 400px;
+        height: fit-content;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    }
+</style>
+<div class="container">
+    <form method="POST">{% csrf_token %}
+    <div class="text-center">
+        <h5><b>Profile</b></h5>
+    </div>
+<div class="mb-3">
+    <lable>Owner Name</lable>
+    <input type="text" name="owner_name" value="{{o.owner_name}}" class="form-control" required>
+</div>
+<div class="mb-3">
+    <lable>Hotel Name</lable>
+    <input type="text" name="hotel_name" value="{{o.hotel_name}}" class="form-control" required>
+</div>
+<div class="mb-3">
+    <lable>Hotel Address</lable>
+    <input type="text" name="hotel_address" value="{{o.hotel_address}}" class="form-control" required>
+</div>
+<div class="mb-3">
+    <lable>Mobile</lable>
+    <input type="number" name="mobile" value="{{o.mobile}}" class="form-control" required>
+</div>
+<div class="mb-3">
+    <lable></lable>
+    <input type="number" name="pin" value="{{o.pin}}" class="form-control" required>
+</div>
+<div class="mb-2"><button type="submit" class="btn btn-primary" >Save</button></div>
+</form>
+</div>
+{% endblock content %}

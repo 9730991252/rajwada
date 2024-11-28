@@ -1,0 +1,77 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add Bill
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Bill Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST">{% csrf_token %} 
+                <div class="mb-3">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="amount">Amount</label>
+                    <input type="text" name="amount" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="person_count">Person Count</label>
+                    <input type="text" name="person_count" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary" name="add_bill">Add</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <div class="container">
+
+      <table class="table table-striped table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Amount</th>
+                  <th>Person Count</th>
+                  <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bill %}
+                <tr>
+                    <th>{{forloop.counter}}</th>
+                    <td>{{b.name}}</td>
+                    <td>{{b.amount}}</td>
+                    <td>{{b.person_count}}</td>
+                    <td><a href="/owner/view_bill/{{b.id}}" class="btn btn-success">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+</table>
+</div>
+
+
+
+{% endblock content %}
