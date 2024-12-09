@@ -1,0 +1,194 @@
+<style>
+    * {
+      margin: 0;
+      padding: 0; 
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #c3a3f1,#6414e9);
+    }
+    .chartCard {
+      margin-top: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .chartBox {
+      width: 350px;
+      height: 350px;
+      padding: 10px;
+      border-radius: 20px;
+      border: solid 3px rgba(54, 162, 235, 1);
+      background: white;
+    }
+    #arrow_box{
+      position: relative;
+      transform: rotate(-90deg);   
+      right: 150px;
+      top: -251px;
+      z-index: 1;
+      font-weight: 600;
+      font-size: 20px;
+    }
+    .spin-btn{
+      position: relative;
+      margin: auto;
+      width: 50%;
+      height: 100%;
+      top: -200px;
+      left: 0;
+    }
+    button{
+      height: 90px;
+      width: 90px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 0;
+      background: radial-gradient(#fdcf3b 50%, #d88a40 85%);
+      color: #c66e16;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+      letter-spacing: 0.1rem;
+      font-weight: 700;
+    }
+    #myChart{
+      margin-left: auto;
+      margin-right: auto;
+      width: fit-content;
+    }
+    .winner_box{
+      margin-top: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: rgb(255, 255, 255);
+      letter-spacing: 2px;
+      font-size: 30px;
+    }
+
+  </style>
+
+
+
+
+<div class="winner_box">
+    <span id="winner">click the button for award</span>
+  </div>
+
+
+
+  <div class="chartCard">
+    <div class="chartBox">
+      <div>
+        <canvas id="myChart"></canvas>
+        <div id="spin-btn" class="spin-btn"><button onclick="rotation()">Click</button></div>
+        <div id="arrow_box">V</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: none;">
+    <audio id="audio" controls>
+        <source src="success-1-6297.mp3" type="audio/mp3">
+	</audio>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+
+
+   <!---------------  Chart JS Plugin  --------------------->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script> 
+   <script>
+   // setup 
+
+
+ 
+   const data = {
+     labels: ['Name', 'Name', 'Name', 'Name', 'Name', 'Name', 'Name'],
+     datasets: [{
+       label: 'Weekly Sales',
+       data: [10, 10, 10, 10, 10, 10, 10],
+       backgroundColor: [
+       "#b3b3b3",
+      "#523cfa",
+      "#ffbb00",
+      "#5bd985",
+      "#de4967",
+      "#b163da",
+      "#523cfa",
+      "#b3b3b3",
+      "#523cfa",
+      "#ffbb00",
+      "#5bd985",
+      "#de4967",
+       ],
+     }]
+   };
+
+
+   const config = {
+     type: 'pie',
+     data,
+     options: {
+       responsive: true,
+       animation: { duration: 10000 },
+       plugins: {
+         tooltip: false,
+         legend: {
+           display: false,
+         },
+         datalabels: {
+           rotation:0,
+           color: "#ffffff",
+           formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+           font: { size: 15 },
+           //align: 'end',
+         },
+       }
+     },
+     plugins:[ChartDataLabels]
+   };
+
+   // render init block
+   const myChart = new Chart(document.getElementById('myChart'),config);
+   function rotation(){
+     myChart.config.data.datasets[0].rotation = Math.random() * 3333;
+     myChart.update();
+       document.getElementById('winner').innerText = 'Best Of Luck';
+       const angle = 180 / Math.PI;
+       setTimeout(() => {
+               myChart.getDatasetMeta(0).data.forEach((datapoint, index) => {
+                   const netStartAngle = datapoint.startAngle * angle % 360;
+                   const netEndAngle = datapoint.endAngle * angle % 360;
+                   if(180 > netStartAngle && 180 < netEndAngle) {
+                       //console.log(myChart.config.data.labels[index])
+                       //document.getElementById('winner').innerText = myChart.config.data.labels[index];
+                       value = myChart.config.data.labels[index];
+                       document.getElementById("winner").innerHTML = `<p>Congratulations, You Have Won ${value}  Of on your Bill ! </p>`;
+                       const msg = new SpeechSynthesisUtterance;
+                       msg.text=`Congratulations, You Have Won ${value} Of on your Bill !`;
+                       msg.voice=speechSynthesis.getVoices()[1];
+                       speechSynthesis.speak(msg);
+                       
+
+                   }
+               })
+             }, 10000)
+           }
+           // Instantly assign Chart.js version
+   const chartVersion = document.getElementById('chartVersion');
+   chartVersion.innerText = Chart.version;
+
+   
+   function success_audio(){
+ var audio = document.getElementById('audio');
+ audio.play();
+}
+
+
+
+   </script>

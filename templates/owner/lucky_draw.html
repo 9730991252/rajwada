@@ -1,0 +1,49 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+{% include 'include/wheel_css.html' %}
+{% include 'include/wheel.html' %}
+<script>
+var total_amount = 0
+</script>
+<style>
+.participant_box{
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  border: 5px ;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  div{
+    display: flex;
+    justify-content: center
+  };
+}
+</style>
+<br>
+<div class="container">
+  <h5 style="color: white;"><b>सहभागी एकूण ग्राहक <strong id="count"></strong></b></h5>
+  <h5 style="color: white;"><b>एकूण बिलाची रक्कम <strong id="amount"></strong></b></h5>
+{% for p in participant %}
+<div class="participant_box">
+<div><b>{{p.customer.name}}</b></div>
+<div><b>{{p.customer.mobile}}</b></div>
+</div>
+<script>
+  document.getElementById('count').innerText = '{{forloop.counter}}'
+  var total_amount = total_amount + Number('{{p.bill.amount}}')
+  document.getElementById('amount').innerText = total_amount
+  </script>
+{% endfor %}
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+</div>
+{% endblock content %}

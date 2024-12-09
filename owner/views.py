@@ -14,6 +14,18 @@ def owner_home(request):
     else:
         return redirect('/login/')
     
+def lucky_draw(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        context={
+            'o':o,
+            'participant':participant.objects.filter(status=1)
+        }
+        return render(request, 'owner/lucky_draw.html', context)
+    else:
+        return redirect('/login/')
+    
 def profile(request):
     if request.session.has_key('owner_mobile'):
         m = request.session['owner_mobile']

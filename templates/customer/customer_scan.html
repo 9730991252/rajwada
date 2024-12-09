@@ -3,6 +3,9 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
+
+{% include 'include/alert.html' %}
+
 <style>
     .logo{
         margin-left: 10px;
@@ -37,6 +40,7 @@
         border: 1px solid black;
         padding: 10px;
         width: 300px;
+        margin: 0 auto;
         .grid_box{
             display: grid;
             justify-content: center;
@@ -47,28 +51,24 @@
         border: 1px solid black;
         padding: 10px;
         width: 300px;
+        margin: 0 auto;
 
     }
 </style>
 <div class="logo"><img src="{% static 'img/logo.jpg' %}" alt=""></div>
 <div class="container text-center mt-5">
     <h5>हॉटेल <br> <b><i>राजवाडा पार्क</i></b> <br> मध्ये  आपले सहर्ष स्वागत.</h5>
-    <div class="main_poster"><img src="{% static 'img/main_image.jpg' %}" alt=""></div>
-    <br>
-    <div class="bill_box">
-        <h5><b>Bill Details</b></h5>
-        <div class="grid_box">
-            <div>Rs. <b> {{bill.amount}}</b></div>
-            <div>Bill Number <b> {{bill.name}}</b></div>
-            <div>Date {{bill.added_date}} </div>
+    <div class="main_poster"><img src="{% static 'img/main_image.jpg' %}" alt=""></div><br>
+    <iframe width="360" height="215" src="https://www.youtube-nocookie.com/embed/8ABBYyiRWmI?si=s9xW4Cw6ICe9qMdc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>            <div>Date {{bill.added_date}} </div>
             <div>Person Count <b> {{bill.person_count}}</b></div>
         </div>
     </div>
+    {% if added_person_count != bill.person_count %}
     <br>
-<div class="Customer_box">
-    <h5><b>Add Participants</b></h5>
-    <form method="POST">{% csrf_token %}
-        <div class="mb-3">
+    <div class="Customer_box">
+        <h5><b>Add Participants</b></h5>
+        <form method="POST">{% csrf_token %}
+            <div class="mb-3">
             <input type="text" name="name" class="form-control" style="font-weight: 700;"  placeholder="Name">
         </div>
         <div class="mb-3">
@@ -82,8 +82,19 @@
         </div>
     </form>
 </div>
+{% endif %}
+<hr>
+{% for p in participant %}
+<div class="bill_box">
+    <h6><b>{{p.customer.name}}</b></h6>
+    <h6><b>{{p.customer.mobile}}</b></h6>
+    <h6><b>{{p.customer.address}}</b></h6>
+</div>
+<br>
+{% endfor %}
 
 
 
 </div>
+<br><br>
 {% endblock content %}

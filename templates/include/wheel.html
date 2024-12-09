@@ -1,0 +1,149 @@
+<div class="winner_box">
+  <span id="winner"></span>
+</div>
+
+
+
+<div class="chartCard">
+  <div class="chartBox">
+    <div>
+      <canvas id="myChart"></canvas>
+      <div id="spin-btn" class="spin-btn"><button onclick="rotation()">Click</button></div>
+      <div id="arrow_box">V</div>
+    </div>
+  </div>
+</div>
+
+<div style="display: none;">
+  <audio id="audio" controls>
+      <source src="success-1-6297.mp3" type="audio/mp3">
+</audio>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+
+
+ <!---------------  Chart JS Plugin  --------------------->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script> 
+ <script>
+   // setup 
+   labels_length = []
+   const for_check_ruselt = []
+
+
+ participant_list()
+  function participant_list(){
+    $.ajax({
+          url: "{% url 'participant_list' %}",
+          method: "GET",
+          data:{
+            
+          },
+          success: function(res){
+            for (let i = 0; i < res.t.length; i++) {
+              data.labels.push(res.t[i].name)
+              for_check_ruselt.push(res.t[i].id)
+              data.datasets[0].data.push(10)
+              //console.log(data.datasets[0].data)
+
+            }
+            labels_length.push(data.labels.length)
+            myChart.update();
+            //$("#result").html(res.data);
+            //document.getElementById('#result').html(res.data);
+          }
+        })
+      }
+
+
+      const data = {
+        labels: [],
+        datasets: [{
+          data: [],    
+          backgroundColor: [
+            "#b3b3b3",
+            "#523cfa",
+    "#ffbb00",
+    "#5bd985",
+    "#de4967",
+    "#b163da",
+    "#523cfa",
+    "#b3b3b3",
+    "#523cfa",
+    "#ffbb00",
+    "#5bd985",
+    "#de4967",
+  ],
+   }]
+  };
+  
+
+  
+  const config = {
+    type: 'pie',
+    data,
+    options: {
+     responsive: true,
+     animation: { duration: 12000 },
+     plugins: {
+       tooltip: false,
+       legend: {
+         display: false,
+       },
+       datalabels: {
+         rotation:0,
+         color: "#ffffff",
+         formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+         font: { size: 15 },
+         //align: 'end',
+       },
+     }
+   },
+   plugins:[ChartDataLabels]
+ };
+
+ // render init block
+ const myChart = new Chart(document.getElementById('myChart'),config);
+ function rotation(){
+   myChart.config.data.datasets[0].rotation = Math.random() * 3333;
+   myChart.update();
+     document.getElementById('winner').innerText = '';
+     const angle = 180 / Math.PI;
+     setTimeout(() => {
+             myChart.getDatasetMeta(0).data.forEach((datapoint, index) => {
+                 const netStartAngle = datapoint.startAngle * angle % 360;
+                 const netEndAngle = datapoint.endAngle * angle % 360;
+                 if(180 > netStartAngle && 180 < netEndAngle) {
+                     //console.log(myChart.config.data.labels[index])
+                     //document.getElementById('winner').innerText = myChart.config.data.labels[index];
+                     value = myChart.config.data.labels[index];
+                     ruselt_id = for_check_ruselt[index];
+                     document.getElementById("winner").innerHTML = `<p>Congratulations, The Winner is <b>${value}</b></p>`;
+                     const msg = new SpeechSynthesisUtterance;
+                     msg.text=`Congratulations, The Winner is ${value}`;
+                     msg.voice=speechSynthesis.getVoices()[1];
+                     speechSynthesis.speak(msg);
+                     
+                    $.ajax({
+                    url: "{% url 'save_winner' %}",
+                    method: "GET",
+                    data:{
+                      winner_id:ruselt_id
+                    },})
+                 }
+             })
+           }, 12000)
+         }
+         // Instantly assign Chart.js version
+ const chartVersion = document.getElementById('chartVersion');
+ chartVersion.innerText = Chart.version;
+
+ 
+ function success_audio(){
+var audio = document.getElementById('audio');
+audio.play();
+}
+
+
+
+ </script>

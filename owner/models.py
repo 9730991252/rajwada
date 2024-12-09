@@ -19,3 +19,16 @@ class Bill(models.Model):
     scan_url = models.CharField(max_length=100)
     status = models.IntegerField(default=1)
     added_date = models.DateTimeField(auto_now_add=True)
+    
+class Customer(models.Model):
+    name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+
+class participant(models.Model):
+    bill = models.ForeignKey(Bill,on_delete=models.PROTECT,null=True)
+    customer = models.ForeignKey(Customer,on_delete=models.PROTECT,null=True)
+    lucky_drow = models.CharField(max_length=100, default=0)
+    date = models.DateField(auto_now_add=True)
+    status = models.IntegerField(default=1)
+
