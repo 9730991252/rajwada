@@ -14,6 +14,30 @@ def owner_home(request):
     else:
         return redirect('/login/')
     
+def winner(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        context={
+            'o':o,
+            'lucky_drow':luckydrow_winner.objects.all()
+        }
+        return render(request, 'owner/winner.html', context)
+    else:
+        return redirect('/login/')
+    
+def customer(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        context={
+            'o':o,
+            'customer':Customer.objects.all()
+        }
+        return render(request, 'owner/customer.html', context)
+    else:
+        return redirect('/login/')
+    
 def lucky_draw(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']

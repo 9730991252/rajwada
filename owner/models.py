@@ -36,5 +36,6 @@ class luckydrow_winner(models.Model):
     winner_participant = models.ForeignKey(participant,on_delete=models.PROTECT,null=True)
     total_participant = models.IntegerField()
     date = models.DateField(auto_now_add=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
     

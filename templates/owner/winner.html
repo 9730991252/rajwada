@@ -1,0 +1,26 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<style>
+.lucky_drow_box{
+    width: 90%;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    text-align: center;
+}
+</style>
+<div class="container">
+{% for l in lucky_drow %}
+<div class="lucky_drow_box">
+    <div class="name">{{l.winner_participant.customer.name}} ,  {{l.winner_participant.customer.mobile}}</div>
+    <div class="name">{{l.winner_participant.customer.address}}</div>
+    <div class="date">{{l.added_date}} </div>
+</div>
+{% endfor %}
+</div>
+{% endblock content %}

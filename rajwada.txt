@@ -2,6 +2,7 @@
 
 _______________________________________
 
+root
 cd rajwada
 git pull
 source venv/bin/activate
@@ -11,6 +12,7 @@ systemctl daemon-reload
 systemctl restart rajwada.com.gunicorn
 exit
 
+root
 cd rajwada
 git pull
 systemctl daemon-reload

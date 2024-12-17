@@ -1,0 +1,24 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<style>
+.lucky_drow_box{
+    width: 90%;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    text-align: center;
+}
+</style>
+<div class="container">
+{% for c in customer %}
+<div class="lucky_drow_box">
+    <div class="name">{{c.name}} , {{c.mobile}} </div>
+</div>
+{% endfor %}
+</div>
+{% endblock content %}

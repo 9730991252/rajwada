@@ -27,11 +27,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="amount">Amount</label>
-                    <input type="text" name="amount" class="form-control" required>
+                    <input type="number" name="amount" id="amount" oninput="check_zero('amount')" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="person_count">Person Count</label>
-                    <input type="text" name="person_count" class="form-control" required>
+                    <input type="number" name="person_count" id="person_count" oninput="check_zero('person_count')" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary" name="add_bill">Add</button>
@@ -72,6 +72,17 @@
 </table>
 </div>
 
+<script>
+  function check_zero(input_id){
+    input = document.getElementById(input_id).value;
+    if ( input < 0){
+      input = document.getElementById(input_id).value = 0;
+
+    }
+    if ( input > 0){
+    }
+  }
+</script>
 
 
 {% endblock content %}
