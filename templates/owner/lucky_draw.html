@@ -5,6 +5,28 @@
 <div>welcome - {{o.owner_name}}</div>
 {% include 'include/owner_menu.html' %}
 {% include 'include/wheel_css.html' %}
+
+<div style="display:flex;justify-content:center;">
+  <input type="number" id="secret_pin_input" style="width: 400px;" oninput="check_pin()" placeholder="Enter your secret pin" class="form-control">
+</div>
+
+<script>
+  function check_pin(){
+    input = document.getElementById('secret_pin_input').value;
+    if (Number(input) == '{{o.pin}}'){
+      document.getElementById('spin-btn').style.visibility = 'unset'
+      setTimeout(() => {
+          if (Number(input) == '{{o.pin}}'){
+            document.getElementById('secret_pin_input').style.display = 'none'
+          }
+      }, 4000);
+    }
+    if (Number(input) != '{{o.pin}}'){
+      document.getElementById('spin-btn').style.visibility = 'hidden'
+    }
+  }
+</script>
+
 {% include 'include/wheel.html' %}
 <script>
 var total_amount = 0

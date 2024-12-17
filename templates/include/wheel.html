@@ -1,17 +1,19 @@
 <div class="winner_box">
-  <span id="winner"></span>
+  <span id="winner" style="color: yellow;"></span>
 </div>
 
-
+<div id="main_box">
 
 <div class="chartCard">
   <div class="chartBox">
     <div>
       <canvas id="myChart"></canvas>
-      <div id="spin-btn" class="spin-btn"><button onclick="rotation()">Click</button></div>
+      <div id="spin-btn" class="spin-btn" style="visibility: hidden;"><button onclick="rotation()">Click</button></div>
       <div id="arrow_box">V</div>
     </div>
   </div>
+</div>
+
 </div>
 
 <div style="display: none;">
@@ -63,16 +65,11 @@
           backgroundColor: [
             "#b3b3b3",
             "#523cfa",
-    "#ffbb00",
-    "#5bd985",
-    "#de4967",
-    "#b163da",
-    "#523cfa",
-    "#b3b3b3",
-    "#523cfa",
-    "#ffbb00",
-    "#5bd985",
-    "#de4967",
+            "#ffbb00",
+            "#5bd985",
+            "#de4967",
+            "#b163da",
+
   ],
    }]
   };
@@ -105,11 +102,13 @@
  // render init block
  const myChart = new Chart(document.getElementById('myChart'),config);
  function rotation(){
+  document.getElementById('spin-btn').style.visibility = 'hidden'
    myChart.config.data.datasets[0].rotation = Math.random() * 3333;
    myChart.update();
      document.getElementById('winner').innerText = '';
      const angle = 180 / Math.PI;
      setTimeout(() => {
+
              myChart.getDatasetMeta(0).data.forEach((datapoint, index) => {
                  const netStartAngle = datapoint.startAngle * angle % 360;
                  const netEndAngle = datapoint.endAngle * angle % 360;
@@ -118,7 +117,7 @@
                      //document.getElementById('winner').innerText = myChart.config.data.labels[index];
                      value = myChart.config.data.labels[index];
                      ruselt_id = for_check_ruselt[index];
-                     document.getElementById("winner").innerHTML = `<p>Congratulations, The Winner is <b>${value}</b></p>`;
+                     document.getElementById("winner").innerHTML = `<p>Congratulations, The Winner is <b style="color:white;">${value}</b></p>`;
                      const msg = new SpeechSynthesisUtterance;
                      msg.text=`Congratulations, The Winner is ${value}`;
                      msg.voice=speechSynthesis.getVoices()[1];
