@@ -39,7 +39,7 @@
             <td>{{t.qty}}</td>
             <td>{{t.price}}</td>
             <td>{{t.total_amount}}</td>
-            <td><form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{t.id}}"><button type="submit" class="btn btn-danger btn-sm" name="Delete">X</button></form></td>
+            <td><form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{t.id}}"><button type="submit" class="btn btn-transparent text-danger btn-sm" name="Delete">X</button></form></td>
           </tr>
         {% endfor %}
     </tbody>
@@ -88,8 +88,8 @@
     {% cart_item_detail i.id e.id as n %}
     <div id="item_detail{{i.id}}" {% if n.qty == 0 %} style="display: none;"{% endif %}>
       <div class="row my-4 text-center">
-        <div class="col-2 mx-2"><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
-        <div class="col-5">
+        <div class="col-2 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
+        <div class="col-7">
             <input type="text" name="qty" style="width: 100px;" id="qty{{i.id}}" value="{% if n.qty != 0 %}{{n.qty}}{% else %}1{% endif %}" oninput="oninput_add_to_cart('{{i.id}}','{{i.price}}')" ></div>
         <div class="col-2"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
       </div>
