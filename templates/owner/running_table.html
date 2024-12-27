@@ -35,14 +35,13 @@
       <div class="container border">
         <div class="row text-center">
         {% for t in table %}
-          <div class="card mx-auto m-4 " style="width: 18rem;">
+          <div class="card mx-auto m-4 " style="width: 200px;">
           
             <div class="card-body ">
               <div><strong id="color{{t.id}}"></strong></div>
               <h1 class="card-title " >{{t.table_number}}<h6 class="m-2 p-1"> Table</h6> </h1>
-              
-              <a href="//{{t.id}}" class="btn btn-primary" >Book Order </a>
-            
+
+              <a href="/owner/view_order/{{t.id}}" class="btn btn-primary" >Book Order </a>
             </div>
           </div>
         {% endfor %}

@@ -27,6 +27,17 @@ def search_tea_item(request):
         t = render_to_string('ajax/search_tea_item.html', context) 
     return JsonResponse({'t': t})
 
+def search_hotel_item(request):
+    if request.method == 'GET':
+        table_id = request.GET['table_id']
+        words = request.GET['words']
+        context={
+                'table_id':table_id,
+                'item':Item.objects.filter(name__icontains=words)[:3],
+        }
+        t = render_to_string('ajax/search_hotel_item.html', context) 
+    return JsonResponse({'t': t})
+
 def add_item_to_cart(request):
     if request.method == 'GET':
         employee_id = request.GET['employee_id']
@@ -78,6 +89,29 @@ def cut_item_to_cart(request):
         }
         t = render_to_string('ajax/item_to_cart.html', context) 
     return JsonResponse({'t': t,'amount':amount})
+
+def add_item_to_hotel_cart(request):
+    if request.method == 'GET':
+        table_id = request.GET['table_id']
+        item_id = request.GET['item_id']
+        price = request.GET['price']
+        qty = request.GET['qty']
+        total_amount = request.GET['total_amount']
+        Hotel_cart(
+            table_id=table_id,
+            item_id = item_id,
+            price=price,
+            qty=qty,
+            total_amount=total_amount
+        ).save()
+        amount = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))
+        amount = amount['total_amount__sum']
+        context={
+                'cart':Hotel_cart.objects.filter(table_id=table_id),
+        }
+        t = render_to_string('ajax/item_to_cart.html', context) 
+    return JsonResponse({'t': t,'amount':amount})
+
 
 def save_winner(request):
     if request.method == 'GET':

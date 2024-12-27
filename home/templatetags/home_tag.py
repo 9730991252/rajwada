@@ -14,6 +14,13 @@ def cart_item_detail(item_id, employee_id):
     else:
         return {'qty':0, 'amount':0}
         
+@register.simple_tag()
+def hotel_cart_item_detail(table_id, item_id):
+    cart = Hotel_cart.objects.filter(item_id=item_id,table_id=table_id).first()
+    if cart:
+        return {'qty':cart.qty, 'amount':cart.total_amount}
+    else:
+        return {'qty':0, 'amount':0}
     
 
 # @register.inclusion_tag('inclusion_tag/office/pendding_completed_farmer_bill.html')

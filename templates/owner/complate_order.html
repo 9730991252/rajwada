@@ -1,0 +1,94 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+
+
+
+<style>
+    *{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  height: 100%;
+  width: 100%;
+}
+
+.Pagination{
+  margin-bottom: 50px;
+}
+
+</style>
+<diV class="container mt-5 p-5 border rounded">
+  <a href="/running_table"   class="btn btn-success px-5 btn-sm" >Running Table</a>
+
+</diV>
+
+<div class="container border">
+  <h3>Your Complate Order </h3>
+  <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Bill Number</th>
+          <th scope="col">Table Number</th>
+          <th scope="col">Date</th>
+          <th scope="col">Total Amount</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for m in order_master %}
+        <tr>
+          <td>{{m.order_filter}}</td>
+          <td>{{m.table.table_number}}</td>
+          <td>{{m.ordered_date}}</td>
+          <td>{{m.total_price}}</td>
+          <td><a href="/owner/complate_view_order/{{m.order_filter}}"  class="btn btn-primary">View</a></td>
+        </tr>
+           {% endfor %}
+
+      </tbody>
+    </table>
+
+                <!-- Pagination -->
+ 
+  <div class="container Pagination">
+    <div class="mx-5">
+    <nav aria-label="...">
+      <ul class="pagination">
+        {% if m.has_previous %}
+        <li class="page-item ">
+          <a class="page-link" href="/complate_order/?page={{m.previous_page_number}}">Previous</a>
+        </li>
+        <li class="page-item ">
+       <a class="page-link" href="/complate_order/?page=1" >First</a>
+      </li>
+        {% endif %}
+  
+        <li class="page-item " aria-current="page">
+          <a class="page-link" href="/complate_order/?page=2">2</a>
+        </li>
+        <li class="page-item"><a class="page-link" href="/complate_order/?page=3">3</a></li>
+        {% if m.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="/complate_order/?page={{m.next_page_number}}">Next</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  </div>
+  <!-- Pagination -->
+
+
+</div>
+
+
+
+
+{% endblock content %}

@@ -5,6 +5,7 @@ import string
 from waiter.models import * 
 from chef.models import * 
 from tea.models import * 
+from django.db.models import Avg, Sum, Min, Max
 # Create your views here.
 def owner_home(request):
     if request.session.has_key('owner_mobile'):
@@ -404,3 +405,77 @@ def view_bill(request,id):
         return render(request, 'owner/view_bill.html', context)
     else:
         return redirect('/login/')
+    
+                           
+def view_order(request,table_id):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if o:
+            amount = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))
+            amount = amount['total_amount__sum']
+            if amount == None:
+                amount = 0
+            if 'Delete'in request.POST:
+                cart_id = request.POST.get('cart_id')
+                Hotel_cart.objects.filter(id=cart_id).delete()
+                return redirect(f'/owner/view_order/{table_id}')
+            if 'complete_order'in request.POST:
+                order_filter = (int(Hotel_order_Master.objects.all().count()) + 1)
+                Hotel_order_Master(
+                    table_id=table_id,
+                    total_price=Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum'],
+                    order_filter=order_filter,
+                ).save()
+                for i in Item.objects.filter(status=1):
+                    if Hotel_cart.objects.filter(table_id=table_id, item_id=i.id):
+                        Hotel_order_Detail(
+                           item_id=i.id,
+                           qty=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('qty'))['qty__sum'],
+                           price=i.price,
+                           total_price=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('total_amount'))['total_amount__sum'],
+                           order_filter=order_filter
+                        ).save()
+                Hotel_cart.objects.filter(table_id=table_id).delete()
+                return redirect(f'/owner/view_order/{table_id}')
+        context={
+            'o':o,
+            'cart':Hotel_cart.objects.filter(table_id=table_id),
+            'item':Item.objects.filter(status=1),
+            'table_id':table_id,
+            'amount':amount,
+            'table':Table.objects.get(id=table_id)
+        }
+        return render(request, 'owner/view_order.html', context)
+    else:
+        return redirect('/login/')
+                           
+def complate_order(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if o:
+            pass
+        context={
+            'o':o,
+            'order_master':Hotel_order_Master.objects.all()
+        }
+        return render(request, 'owner/complate_order.html', context)
+    else:
+        return redirect('/login/')
+    
+def complate_view_order(request,order_filter):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if o:
+            pass
+        context={
+            'o':o,
+            'order_master':Hotel_order_Master.objects.filter(order_filter=order_filter).first(),
+            'order_detail':Hotel_order_Detail.objects.filter(order_filter=order_filter)
+        }
+        return render(request, 'owner/complate_view_order.html', context)
+    else:
+        return redirect('/login/')
+    

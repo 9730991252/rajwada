@@ -1,0 +1,252 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+{% load home_tag %}
+
+
+
+
+
+
+
+
+<style>
+    .tmc{
+      font-weight: 700;
+      color: black;
+      font-size: 22px;
+      background-color: rgba(166, 255, 187, 0.2);
+    }
+  </style>
+<div class="container border my-2">
+    <div>
+    <h5>Table-{{table.table_number}}</h5>
+    </div>
+</div>
+    <div class="container border">
+      <div id="cart">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">Qty</th>
+          <th scope="col">Price</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody id="cart_item" >
+
+        {% for t in cart %}
+        
+        <tr>
+         
+          <td>{{t.item.name}}</td>
+          <td>{{t.qty}}</td>
+          <td>{{t.price}}</td>
+          <td>{{t.total_amount}}</td>
+          <td><form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{t.id}}"><button type="submit" class="btn btn-transparent text-danger btn-sm" name="Delete">X</button></form></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    Total Amount Rs.<input type="readonly" id="amount" value="{{amount}}" size=5 class="text-center tmc" disabled></input>
+    <h5>Thank You Visit Again</h5>
+    </div>
+    
+    
+    </div>
+
+    <form method="POST"> {% csrf_token %}
+        <div class="container"><button type="submit"  name="complete_order" class="btn btn-danger " >Complete Order</button></div>
+      </form>    
+  
+
+
+
+
+
+<!---------------------------------------------------------->
+
+<style>
+    .dish_main_box{
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 300px);
+        gap: 10px;
+        width: 80%;
+        margin: auto;
+        justify-content: center;
+    }
+    .dish_box{
+        border: 1px solid black;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .name{
+        font-weight: 700px;
+    }
+    .flex{
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+</style>
+
+<br>
+<div class="dish_main_box" id="item_ruselt">
+{% for i in item %}
+
+<input type="hidden" name="id" value="{{i.id}}">
+<input type="hidden" name="price" value="{{i.price}}">
+<div class="dish_box">
+    <div class="name" onclick="item_detail('{{i.id}}','{{i.price}}')"><b>{{i.name}}</b></div>
+    <div id="item_detail{{i.id}}" style="display: none;">
+      <div class="row my-4 text-center">
+        <div class="col-2 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
+        <div class="col-3"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
+        <div class="col-2"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
+        <div class="col-5"><button type="button" class="btn btn-danger mx-auto" onclick="add_to_cart('{{i.id}}','{{i.price}}')">Confirm </button></div>
+      </div>
+      <div class="flex">
+          <div class="mt-2"  >Rs.<input style="border: none; width: 100px;" type="text" name="total_amount"  id="price{{i.id}}" value="{{i.price}}" readonly></div>
+      </div>
+    </div>
+</div>
+
+{% endfor %}
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+</div>
+
+<style>
+  .footer{
+    background-color: antiquewhite;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    display: flex;
+    .input{
+      width: 95%;
+    }
+  }
+</style>
+
+
+<div class="footer">
+  <div class="input">
+    <div><input type="text" oninput="search_hotel_item()" class="form-control" placeholder="Search Item" id="words"></div>
+  </div>
+</div>
+
+
+<script>
+function add_to_cart(id,price){
+    var qty = document.getElementById('qty'+id).value
+    p=qty*price
+
+    $.ajax({
+    url: "{% url 'add_item_to_hotel_cart' %}",
+    method: "GET",
+    data:{
+        table_id:'{{table_id}}',
+        item_id:id,
+        price:price,
+        qty:qty,
+        total_amount:p
+    },
+    success: function(res){
+        document.getElementById('amount').value = res.amount
+        document.getElementById('cart_item').innerHTML = res.t
+    }
+  })
+}
+    
+function search_hotel_item(){
+  $.ajax({
+    url: "{% url 'search_hotel_item' %}",
+    method: "GET",
+    data:{
+      words:document.getElementById('words').value,
+      table_id:'{{table_id}}'
+    },
+    success: function(res){
+      document.getElementById('item_ruselt').innerHTML = res.t
+    }
+  })
+}
+
+last_id = ''
+function item_detail(id,price){
+    document.getElementById('item_detail'+id).style.display = 'unset'
+    if(last_id){
+        document.getElementById('item_detail'+last_id).style.display = 'none'
+    }
+    last_id = id
+
+}
+
+function plus(id,price){
+  var qty = document.getElementById('qty'+id).value
+  if(qty < 50){
+    qty++;
+  document.getElementById('qty'+id).value=qty;
+  p=qty*price
+  document.getElementById('price'+id).value=p;
+    //speak code
+    
+  const msg = new SpeechSynthesisUtterance;
+  msg.text=qty;
+  
+  msg.voice=speechSynthesis.getVoices()[1];
+  speechSynthesis.speak(msg);
+
+
+//ajax
+ 
+
+
+  }
+}
+    
+  // minus btn code
+
+    function minus(id,price){
+  var qty = document.getElementById('qty'+id).value
+  if(qty > 0){
+  qty--;
+  document.getElementById('qty'+id).value=qty;
+  p=qty*price
+  document.getElementById('price'+id).value=p;
+
+        //speak code
+    
+        const msg = new SpeechSynthesisUtterance;
+  msg.text=qty;
+  
+  msg.voice=speechSynthesis.getVoices()[1];
+  speechSynthesis.speak(msg);
+  }
+  if(qty == 0){
+    document.getElementById('item_detail'+id).style.display = 'none'
+
+  }
+    }
+    
+
+</script>
+
+
+{% endblock content %}

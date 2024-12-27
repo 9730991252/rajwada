@@ -41,6 +41,7 @@ class luckydrow_winner(models.Model):
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
     
+################ ⁡⁣⁢⁣𝗛𝗼𝘁𝗲𝗹⁡ #############
 class Category(models.Model):
     name = models.CharField(max_length=100)
     status = models.IntegerField(default=1)
@@ -51,12 +52,31 @@ class Item(models.Model):
     price = models.FloatField(null=True)
     status = models.IntegerField(default=1)
     
-    
-    
-    #############
-    
+
 class Table(models.Model):
     table_number = models.CharField(max_length=100)
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
     
+    
+class Hotel_cart(models.Model):
+    table = models.ForeignKey(Table,on_delete=models.PROTECT,null=True)
+    item = models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
+    price = models.FloatField()
+    total_amount = models.FloatField(default=0)
+    qty = models.IntegerField()
+    
+
+class Hotel_order_Master(models.Model):
+    table=models.ForeignKey(Table,on_delete=models.PROTECT,default=True)
+    total_price=models.FloatField(default=0,null=True)
+    ordered_date = models.DateTimeField(auto_now_add=True,null=True)
+    order_filter=models.IntegerField(default=True)
+
+
+class Hotel_order_Detail(models.Model):
+    item=models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
+    qty = models.IntegerField(default=1)
+    price=models.FloatField(default=0,null=True)
+    total_price=models.FloatField(default=0,null=True)
+    order_filter=models.IntegerField(default=True)
