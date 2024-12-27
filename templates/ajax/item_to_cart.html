@@ -1,0 +1,9 @@
+{% for t in cart %}
+<tr id="cart">
+    <td>{{t.item.name}}</td>
+    <td>{{t.qty}}</td>
+    <td>{{t.price}}</td>
+    <td>{{t.total_amount}}</td>
+    <td><form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{t.id}}"><button type="submit" class="btn btn-danger" name="Delete">X</button></form></td>
+  </tr>
+{% endfor %}

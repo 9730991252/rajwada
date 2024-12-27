@@ -1,0 +1,24 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div class="hide">
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+</div>
+<style media="print">
+    .hide{
+        display: none;
+    }
+</style>
+<div class="container text-center">
+
+<div class="qr_box">
+    <div><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://rajwada.tejorder.com/menu/" ></div>
+</div>
+
+<div class="hide mt-3">
+<button class="btn btn-primary" onclick="print()">Print</button>
+</div>
+</div>
+{% endblock content %}

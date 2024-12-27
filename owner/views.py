@@ -1,7 +1,10 @@
 from django.shortcuts import redirect, render
 from .models import *
 import random
-import string 
+import string
+from waiter.models import * 
+from chef.models import * 
+from tea.models import * 
 # Create your views here.
 def owner_home(request):
     if request.session.has_key('owner_mobile'):
@@ -14,10 +17,287 @@ def owner_home(request):
     else:
         return redirect('/login/')
     
+def tea_employee(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()
+        if 'add_tea_employee'in request.POST:
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            Tea_employee(
+                name=name,
+                mobile = mobile,
+                pin = pin,
+            ).save()
+            return redirect('tea_employee')
+        if 'edit_tea_employee'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            w = Tea_employee.objects.filter(id=id).first()
+            w.name = name
+            w.mobile = mobile
+            w.pin = pin
+            w.save()
+            return redirect('tea_employee')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            w = Tea_employee.objects.filter(id=id).first()
+            w.status = 0
+            w.save()
+            return redirect('tea_employee')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            w = Tea_employee.objects.filter(id=id).first()
+            w.status = 1
+            w.save()        
+        context={
+            'o':o,
+            'tea_employee':Tea_employee.objects.all()
+        }
+        return render(request, 'owner/tea_employee.html', context)
+    else:
+        return redirect('/login/')
+    
+def running_table(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        context={
+            'o':o,
+            'table':Table.objects.filter(status=1)
+        }
+        return render(request, 'owner/running_table.html', context)
+    else:
+        return redirect('/login/')
+    
+def table(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()
+        if 'add_table'in request.POST:
+            table_number = Table.objects.all().count()
+            table_number += 1
+            Table(
+                table_number=table_number
+            ).save()
+            return redirect('table')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            c = Table.objects.filter(id=id).first()
+            c.status = 0
+            c.save()
+            return redirect('table')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            c = Table.objects.filter(id=id).first()
+            c.status = 1
+            c.save()
+            return redirect('table')
+        
+        context={
+            'o':o,
+            'table':Table.objects.all()
+        }
+        return render(request, 'owner/table.html', context)
+    else:
+        return redirect('/login/')
+    
+def menu_qrcode(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        context={
+            'o':o
+        }
+        return render(request, 'owner/menu_qrcode.html', context)
+    else:
+        return redirect('/login/')
+    
+def category(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if 'add_category'in request.POST:
+            name = request.POST.get('name')
+            Category(
+                name=name
+            ).save()
+            return redirect('category')
+        if 'edit_category'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            c = Category.objects.filter(id=id).first()
+            c.name = name
+            c.save()
+            return redirect('category')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            c = Category.objects.filter(id=id).first()
+            c.status = 0
+            c.save()
+            return redirect('category')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            c = Category.objects.filter(id=id).first()
+            c.status = 1
+            c.save()
+            return redirect('category')
+        context={
+            'o':o,
+            'category':Category.objects.all()
+        }
+        return render(request, 'owner/category.html', context)
+    else:
+        return redirect('/login/')
+    
+def item(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if 'add_item'in request.POST:
+            name = request.POST.get('name')
+            category_id = request.POST.get('category_id')
+            price = request.POST.get('price')
+            Item(
+                name=name,
+                category_id=category_id,
+                price=price
+            ).save()
+            return redirect('item')
+        if 'edit_item'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            category_id = request.POST.get('category_id')
+            price = request.POST.get('price')
+            c = Item.objects.filter(id=id).first()
+            c.name = name
+            c.price = price
+            c.category_id = category_id
+            c.save()
+            return redirect('item')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            c = Item.objects.filter(id=id).first()
+            c.status = 0
+            c.save()
+            return redirect('item')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            c = Item.objects.filter(id=id).first()
+            c.status = 1
+            c.save()
+            return redirect('item')
+        context={
+            'o':o,
+            'category':Category.objects.filter(status = 1),
+            'item':Item.objects.all()
+        }
+        return render(request, 'owner/item.html', context)
+    else:
+        return redirect('/login/')
+    
+def waiter(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if 'add_waiter'in request.POST:
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            Waiter(
+                name=name,
+                mobile = mobile,
+                pin = pin,
+            ).save()
+            return redirect('waiter')
+        if 'edit_waiter'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            w = Waiter.objects.filter(id=id).first()
+            w.name = name
+            w.mobile = mobile
+            w.pin = pin
+            w.save()
+            return redirect('waiter')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            w = Waiter.objects.filter(id=id).first()
+            w.status = 0
+            w.save()
+            return redirect('waiter')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            w = Waiter.objects.filter(id=id).first()
+            w.status = 1
+            w.save()
+
+        context={
+            'o':o,
+            'waiter':Waiter.objects.all(),        }
+        return render(request, 'owner/waiter.html', context)
+    else:
+        return redirect('/login/')
+    
+def chef(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if 'add_chef'in request.POST:
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            Chef(
+                name=name,
+                mobile = mobile,
+                pin = pin,
+            ).save()
+            return redirect('chef')
+        if 'edit_chef'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            mobile = request.POST.get('mobile')
+            pin = request.POST.get('pin')
+            w = Chef.objects.filter(id=id).first()
+            w.name = name
+            w.mobile = mobile 
+            w.pin = pin
+            w.save()
+            return redirect('chef')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            w = Chef.objects.filter(id=id).first()
+            w.status = 0
+            w.save()
+            return redirect('chef')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            w = Chef.objects.filter(id=id).first()
+            w.status = 1
+            w.save()
+
+        context={
+            'o':o,
+            'chef':Chef.objects.all(),        }
+        return render(request, 'owner/chef.html', context)
+    else:
+        return redirect('/login/')
+    
 def winner(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
         o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        if 'add_url'in request.POST:
+            id = request.POST.get('id')
+            url = request.POST.get('url')
+            lucky_draw = luckydrow_winner.objects.filter(id=id).first()
+            lucky_draw.youtube_url = url
+            lucky_draw.save()
+            
         context={
             'o':o,
             'lucky_drow':luckydrow_winner.objects.all()
@@ -94,7 +374,6 @@ def add_bill(request):
                 amount = request.POST.get('amount')
                 person_count = request.POST.get('person_count')
                 url = generate_url()
-                print(url)
                 Bill(
                     name = name,
                     amount = amount,

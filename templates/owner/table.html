@@ -1,0 +1,47 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<div class="container">
+<form method="POST">{% csrf_token %}
+    <button type="submit" class="btn btn-primary" name="add_table">Add Table</button>
+</form>
+
+<style>
+    .table_main_box{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .table_box{
+        padding: 10px;
+        border: 1px solid rgb(110, 110, 110);
+        border-radius: 10px;
+        width: 200px;
+        text-align: center;
+        .table_number{
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+    }
+</style>
+
+<div class="table_main_box">
+{% for t in table %}
+<div class="table_box">
+<div class="table_number">{{t.table_number}}</div>
+<br>
+<td><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{t.id}}"> {% if t.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></td>
+</div>
+{% endfor %}
+</div>
+
+
+</div>
+{% endblock content %}

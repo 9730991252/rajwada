@@ -1,0 +1,115 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<div class="container">
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add  Tea Employee
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Tea Employee</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST">{% csrf_token %}
+            <div class="mb-3">
+                <label for="">Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="">Mobile</label>
+                <input type="number" name="mobile" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="">Pin</label>
+                <input type="number" name="pin" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary" name="add_tea_employee">Add</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Mobile</th>
+        <th scope="col">Pin</th>
+        <th scope="col">Action</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for e in tea_employee %}
+            <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td>{{e.name}}</td>
+                <td>{{e.mobile}}</td>
+                <td>{{e.pin}}</td>
+                <td><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{e.id}}"> {% if e.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></td>
+                <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{e.id}}">Edit</button></td>
+            </tr>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal{{e.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Waiter</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST">{% csrf_token %}
+            <input type="hidden" name="id" value="{{e.id}}">
+            <div class="mb-3">
+                <label for="">Name</label>
+                <input type="text" name="name" value="{{e.name}}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="">mobile</label>
+                <input type="text" name="mobile" value="{{e.mobile}}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="">pin</label>
+                <input type="text" name="pin" value="{{e.pin}}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary" name="edit_tea_employee">Add</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+        {% endfor %}
+    </tbody>
+  </table>
+
+
+
+</div>
+
+
+{% endblock content %}

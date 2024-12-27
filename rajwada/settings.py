@@ -44,6 +44,10 @@ INSTALLED_APPS = [
     'ajax',
     'sunil',
     'customer',
+    'embed_video',
+    'waiter',
+    'chef',
+    'tea'
 ]
 
 MIDDLEWARE = [

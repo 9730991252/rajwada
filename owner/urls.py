@@ -7,5 +7,13 @@ urlpatterns = [
     path('lucky_draw/', views.lucky_draw, name='lucky_draw'),
     path('winner/', views.winner, name='winner'),
     path('customer/', views.customer, name='customer'),
+    path('category/', views.category, name='category'),
+    path('item/', views.item, name='item'),
+    path('waiter/', views.waiter, name='waiter'),
+    path('chef/', views.chef, name='chef'),
+    path('table/', views.table, name='table'),
+    path('menu_qrcode/', views.menu_qrcode, name='menu_qrcode'),
     path('view_bill/<int:id>', views.view_bill, name='view_bill'),
+    path('running_table/', views.running_table, name='running_table'),
+    path('tea_employee/', views.tea_employee, name='tea_employee'),
 ]

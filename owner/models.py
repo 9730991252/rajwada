@@ -1,4 +1,5 @@
 from django.db import models
+from embed_video.fields import EmbedVideoField 
 
 # Create your models here.
 class Owner(models.Model):
@@ -35,7 +36,27 @@ class participant(models.Model):
 class luckydrow_winner(models.Model):
     winner_participant = models.ForeignKey(participant,on_delete=models.PROTECT,null=True)
     total_participant = models.IntegerField()
+    youtube_url = EmbedVideoField()
     date = models.DateField(auto_now_add=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    status = models.IntegerField(default=1)
+    
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    status = models.IntegerField(default=1)
+    
+class Item(models.Model):
+    category = models.ForeignKey(Category,on_delete=models.PROTECT,null=True)
+    name = models.CharField(max_length=100)
+    price = models.FloatField(null=True)
+    status = models.IntegerField(default=1)
+    
+    
+    
+    #############
+    
+class Table(models.Model):
+    table_number = models.CharField(max_length=100)
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
     

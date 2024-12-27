@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.http import *
 from customer.models import *
 from owner.models import *
+from tea.models import *
 from django.template.loader import *
+from django.db.models import Avg, Sum, Min, Max
 # Create your views here.
 def participant_list(request):
     if request.method == 'GET':
@@ -12,6 +14,70 @@ def participant_list(request):
             c.append({'name':p.customer.name,'id':p.id})
         cr = list(c)
     return JsonResponse({'t': cr})
+
+def search_tea_item(request):
+    if request.method == 'GET':
+        words = request.GET['words']
+        mobile = request.session['tea_mobile']
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
+        context={
+                'item':Tea_item.objects.filter(name__icontains=words)[:3],
+                'e':e
+        }
+        t = render_to_string('ajax/search_tea_item.html', context) 
+    return JsonResponse({'t': t})
+
+def add_item_to_cart(request):
+    if request.method == 'GET':
+        employee_id = request.GET['employee_id']
+        item_id = request.GET['item_id']
+        price = request.GET['price']
+        qty = request.GET['qty']
+        total_amount = request.GET['total_amount']
+        c = Cart.objects.filter(employee_id=employee_id, item_id=item_id).first()
+        if c:
+            c.qty = qty
+            c.price = price
+            c.total_amount = total_amount
+            c.save()
+        else:
+            Cart(
+                employee_id=employee_id,
+                item_id = item_id,
+                price=price,
+                qty=qty,
+                total_amount=total_amount
+            ).save()
+        amount = Cart.objects.filter(employee_id=employee_id).aggregate(Sum('total_amount'))
+        amount = amount['total_amount__sum']
+        context={
+                'cart':Cart.objects.filter(employee_id=employee_id),
+        }
+        t = render_to_string('ajax/item_to_cart.html', context) 
+    return JsonResponse({'t': t,'amount':amount})
+
+def cut_item_to_cart(request):
+    if request.method == 'GET':
+        employee_id = request.GET['employee_id']
+        item_id = request.GET['item_id']
+        price = request.GET['price']
+        qty = request.GET['qty']
+        total_amount = request.GET['total_amount']
+        c = Cart.objects.filter(employee_id=employee_id, item_id=item_id).first()
+        if int(qty) == 0:
+            Cart.objects.filter(employee_id=employee_id, item_id=item_id).delete()
+        else:
+            c.qty = qty
+            c.price = price
+            c.total_amount = total_amount
+            c.save()
+        amount = Cart.objects.filter(employee_id=employee_id).aggregate(Sum('total_amount'))
+        amount = amount['total_amount__sum']
+        context={
+                'cart':Cart.objects.filter(employee_id=employee_id),
+        }
+        t = render_to_string('ajax/item_to_cart.html', context) 
+    return JsonResponse({'t': t,'amount':amount})
 
 def save_winner(request):
     if request.method == 'GET':

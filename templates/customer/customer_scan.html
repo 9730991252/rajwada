@@ -3,7 +3,7 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
-
+{% load embed_video_tags %}
 {% include 'include/alert.html' %}
 
 <style>
@@ -62,13 +62,15 @@
     {% if luckydrow %}
     <br>
         <h5>Winner is {{luckydrow.winner_participant.customer.name}} </h5>
+        {% video luckydrow.youtube_url '360x215' %}
+        
     <script>
 
     </script>
     <br>
     {% endif %}
     <div class="main_poster"><img src="{% static 'img/main_image.jpg' %}" alt=""></div><br>
-    <iframe width="360" height="215" src="https://www.youtube-nocookie.com/embed/8ABBYyiRWmI?si=s9xW4Cw6ICe9qMdc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>            <div>Date {{bill.added_date}} </div>
+    <iframe width="360" height="215" src="https://www.youtube-nocookie.com/embed/vKoTQAg2flE?si=jWvWnW81dElbAieD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>            <div>Date {{bill.added_date}} </div>
     <div>Person Count <b> {{bill.person_count}}</b></div>
 </div>
 

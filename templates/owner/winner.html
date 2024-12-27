@@ -19,6 +19,14 @@
 <div class="lucky_drow_box">
     <div class="name">{{l.winner_participant.customer.name}} ,  {{l.winner_participant.customer.mobile}}</div>
     <div class="name">{{l.winner_participant.customer.address}}</div>
+    <form method="POST">  {% csrf_token %}
+        <input type="hidden" name="id" value="{{l.id}}">
+        <div class="row g-0 text-center">
+            <div class="col-sm-9"><input type="url" value="{{l.youtube_url}}" name="url" class="form-control" placeholder="Enter Youtube Url" required></div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-2"><button type="submit" name="add_url" class="btn btn-primary" >Submit</button> </div>
+        </div>
+    </form>
     <div class="date">{{l.added_date}} </div>
 </div>
 {% endfor %}

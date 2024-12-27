@@ -24,5 +24,8 @@ urlpatterns = [
     path('owner/', include('owner.urls')),
     path('sunil/', include('sunil.urls')),
     path('ajax/', include('ajax.urls')),
-    path('customer/', include('customer.urls'))
+    path('customer/', include('customer.urls')),
+    path('waiter/', include('waiter.urls')),
+    path('chef/', include('chef.urls')),
+    path('tea/', include('tea.urls')),
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
