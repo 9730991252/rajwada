@@ -7,10 +7,11 @@ def tea_home(request):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
         e = Tea_employee.objects.filter(mobile=mobile, status=1).first()        
-        context={
-            'e':e
-        }
-        return render(request, 'tea/tea_home.html', context)
+        return redirect('bill')
+        # context={
+        #     'e':e
+        # }
+        # return render(request, 'tea/tea_home.html', context)
     else:
         return redirect('/login/')
     
@@ -97,6 +98,7 @@ def tea_item(request):
         return redirect('/login/')
     
     
+@csrf_exempt
 def bill(request):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
@@ -104,9 +106,12 @@ def bill(request):
         if e:
             amount = Cart.objects.filter(employee_id=e.id).aggregate(Sum('total_amount'))
             amount = amount['total_amount__sum']
+            if amount == None:
+                amount = 0
             if 'Delete'in request.POST:
                 cart_id = request.POST.get('cart_id')
                 Cart.objects.filter(id=cart_id).delete()
+                return redirect('bill')
             if 'complete_order'in request.POST:
                 print('hi')
                 amount = Cart.objects.filter(employee_id=e.id).aggregate(Sum('total_amount'))
