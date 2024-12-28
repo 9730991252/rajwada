@@ -136,3 +136,13 @@ def save_winner(request):
             bill.save()
     return JsonResponse({'t': 'cr'})
 
+
+def filter_items_by_category(request):
+    if request.method == 'GET':
+        category_id = request.GET['category_id']
+        items = Item.objects.filter(category_id=category_id)
+        context = {
+            'item': items,
+        }
+        t = render_to_string('ajax/filter_items_by_category.html', context)
+    return JsonResponse({'t': t})

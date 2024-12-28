@@ -65,10 +65,20 @@ def tea_employee(request):
 def running_table(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
-        o = Owner.objects.filter(mobile=mobile, status=1).first()        
+        o = Owner.objects.filter(mobile=mobile, status=1).first()
+        table = []
+        runing_table = []
+        for t in Table.objects.filter(status=1):
+            status = 'no'        
+            c = Hotel_cart.objects.filter(table_id=t.id).exists()
+            if c:
+                runing_table.append({'id':t.id,'table_number':t.table_number})
+                status = 'yes'        
+            table.append({'id':t.id,'table_number':t.table_number,'status':status})
         context={
             'o':o,
-            'table':Table.objects.filter(status=1)
+            'table':table,
+            'runing_table':runing_table
         }
         return render(request, 'owner/running_table.html', context)
     else:
@@ -364,49 +374,6 @@ def generate_url():
     url = f'{random.choice(string.ascii_letters)}{random.choice(string.ascii_letters)}{count}{random.choice(string.ascii_letters)}{random.choice(string.ascii_letters)}'
     return url
     
-
-def add_bill(request):
-    if request.session.has_key('owner_mobile'):
-        mobile = request.session['owner_mobile']
-        o = Owner.objects.filter(mobile=mobile, status=1).first() 
-        if o:  
-            if 'add_bill'in request.POST:
-                name = request.POST.get('name')
-                amount = request.POST.get('amount')
-                person_count = request.POST.get('person_count')
-                url = generate_url()
-                Bill(
-                    name = name,
-                    amount = amount,
-                    person_count = person_count,
-                    scan_url=url
-                ).save()
-                b = Bill.objects.filter(scan_url=url).first()
-                return redirect(f'/owner/view_bill/{b.id}') 
-        context={
-            'o':o,
-            'bill':Bill.objects.all().order_by('-id')
-        }
-        return render(request, 'owner/add_bill.html', context)
-    else:
-        return redirect('/login/')
-    
-def view_bill(request,id):
-    if request.session.has_key('owner_mobile'):
-        mobile = request.session['owner_mobile']
-        o = Owner.objects.filter(mobile=mobile, status=1).first()        
-        if o:
-            bill = Bill.objects.filter(id=id).first()
-            
-        context={
-            'o':o,
-            'bill':bill
-        }
-        return render(request, 'owner/view_bill.html', context)
-    else:
-        return redirect('/login/')
-    
-                           
 def view_order(request,table_id):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
@@ -437,14 +404,15 @@ def view_order(request,table_id):
                            order_filter=order_filter
                         ).save()
                 Hotel_cart.objects.filter(table_id=table_id).delete()
-                return redirect(f'/owner/view_order/{table_id}')
+                return redirect(f'/owner/complate_view_order/{order_filter}')
         context={
             'o':o,
             'cart':Hotel_cart.objects.filter(table_id=table_id),
             'item':Item.objects.filter(status=1),
             'table_id':table_id,
             'amount':amount,
-            'table':Table.objects.get(id=table_id)
+            'table':Table.objects.get(id=table_id),
+            'category':Category.objects.filter(status=1)
         }
         return render(request, 'owner/view_order.html', context)
     else:
@@ -469,11 +437,24 @@ def complate_view_order(request,order_filter):
         mobile = request.session['owner_mobile']
         o = Owner.objects.filter(mobile=mobile, status=1).first()        
         if o:
-            pass
+            bill_status = 0
+            order_master = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
+            if Bill.objects.filter(order_master__order_filter=order_filter).exists():
+                bill_status = 1
+            if 'Add_person_count'in request.POST:
+                person_count = request.POST.get('person_count')
+                Bill(
+                    added_by_id = o.id,
+                    order_master_id = order_master.id,
+                    person_count=person_count,
+                    scan_url=generate_url(),
+                    ).save()
+                return redirect(f'/owner/complate_view_order/{order_filter}')
         context={
             'o':o,
-            'order_master':Hotel_order_Master.objects.filter(order_filter=order_filter).first(),
-            'order_detail':Hotel_order_Detail.objects.filter(order_filter=order_filter)
+            'order_master':order_master,
+            'order_detail':Hotel_order_Detail.objects.filter(order_filter=order_filter),
+            'bill_status':bill_status
         }
         return render(request, 'owner/complate_view_order.html', context)
     else:

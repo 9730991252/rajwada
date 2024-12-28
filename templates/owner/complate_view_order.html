@@ -33,6 +33,11 @@
     display: flex;
     justify-content: space-between;
   }
+  .flex{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
 </style>
 <style media="print">
   @page{
@@ -87,10 +92,35 @@
         {% endfor %}
     </div>
     <h6><b>Total Amount Rs.{{order_master.total_price}}</b></h6>
+
+
+    {% if bill_status == 1 %}
+    <div class="mt-3 text-center" style="padding: 5px;">
+        <b>पैठणी साडी लकी ड्रॉ सहभागी झाल्या बद्धल धन्यवाद.</b>
+        <b>कृपया खालील स्कॅनर स्कॅन करून {{bill.person_count}} महिलांची नोंदणी करू शकता. </b>
+        <div class="mt-1 flex">
+            <div class=""><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://rajwada.tejorder.com/customer/{{bill.scan_url}}" ></div>
+            <div><p><b>टीप.</b> सदर स्कॅनर नोंदणी सोडत तारखेच्या आगोदर करावी  </p></div>
+        </div>
+    </div>
+    {% else %}
+        <div class="hide container">
+            <form method="POST">{% csrf_token %}
+                <div class="mb-3">
+                    <label>Paithani Skim Person Count</label>
+                    <input type="number" class="form-control" name="person_count" placeholder="Person Count" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-danger" name="Add_person_count">Add</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+
     <div class="text-center"><h6><b>Thank You Visit Again</b></h6></div>
     <div class="addvertise">All type Mobile Software  9730 99 1252</div>
 </div>
-
 
 <br>
 <div class="hide container text-center">

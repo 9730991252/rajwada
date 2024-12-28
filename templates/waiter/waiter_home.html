@@ -4,40 +4,63 @@
 {% block content %}
 <div>welcome - {{w.name}}</div>
 {% include 'include/waiter_menu.html' %}
-<div class="container">
+<div  class="container border my-2">
+    <h5 class="text-center bg"> <b>चालू टेबल </b></h5>
+  </div>
+    <div class="container border">
+      
+      <table class="table">
+        <thead>
+          <tr >
+            <th scope="col" class="text-center">Table Number</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in runing_table %}
+          <tr>
+            <td><h1 class="my-3 text-center">{{t.table_number}}</h1></td>
+            <td><a href="/waiter/order/{{t.id}}"  class="btn btn-success btn-lg my-3">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <br>
 
-    <style>
-        .table_main_box{
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .table_box{
-            padding: 10px;
-            border: 1px solid rgb(110, 110, 110);
-            border-radius: 10px;
-            width: 200px;
-            text-align: center;
-            .table_number{
-                font-weight: 700;
-                font-size: 20px;
-            }
+    <div  class="container border">
+        <h5 class="text-center bg p-3"><b> नवीन टेबल सुरु साठी </b></h5>
+      </div>
+      <div class="container border">
+        <div class="row text-center">
+        {% for t in table %}
+          <div class="card mx-auto m-4 " style="width: 200px;">
+            {% if t.status == 'yes' %}
+
+              <div class="bg-danger text-light">Running</div>
+            {% endif %}
+            <div class="card-body ">
+              <div><strong id="color{{t.id}}"></strong></div>
+              <h1 class="card-title " >{{t.table_number}}<h6 class="m-2 p-1"> Table</h6> </h1>
+
+              <a href="/waiter/order/{{t.id}}" class="btn btn-primary" >Book Order </a>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+        </div>
+      
+      
+        
+        
     
-        }
-    </style>
     
-    <div class="table_main_box">
-    {% for t in table %}
-    <div class="table_box">
-    <div class="table_number">{{t.table_number}}</div>
-    <div>टेबल</div>
-    <a href="/waiter/order/{{t.id}}" class="btn btn-primary">बुक ऑर्डर</a>
-    </div>
-    {% endfor %}
-    </div>
+    
+    
+    
+      
+    
 
 </div>
 {% endblock content %}
