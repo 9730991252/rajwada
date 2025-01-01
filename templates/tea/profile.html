@@ -2,7 +2,9 @@
 {% block head %}
 {% endblock head %}
 {% block content %}
-<div>welcome - {{o.owner_name}}</div>
+{% load home_tag %}
+<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total %}
+</b></div>
 {% include 'include/tea_menu.html' %}
 <style>
     form{

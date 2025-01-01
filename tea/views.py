@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from .models import *
 from django.db.models import Avg, Sum, Min, Max
 from django.views.decorators.csrf import csrf_exempt
+from datetime import date
 # Create your views here.
 def tea_home(request):
     if request.session.has_key('tea_mobile'):
@@ -18,10 +19,10 @@ def tea_home(request):
 def completed_bill(request):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
-        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()        
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
         context={
             'e':e,
-            'bill':OrderMaster.objects.all()
+            'bill':OrderMaster.objects.all().order_by('-id'),
         }
         return render(request, 'tea/completed_bill.html', context)
     else:
@@ -49,7 +50,9 @@ def profile(request):
                 ).save()
         context={
             'e':e ,
-            'profile':Tea_profile.objects.all().last()
+            'profile':Tea_profile.objects.all().last(),
+            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
+
         }
         return render(request, 'tea/profile.html', context)
     else:
@@ -91,7 +94,8 @@ def tea_item(request):
             return redirect('tea_item')        
         context={
             'e':e,
-            'item':Tea_item.objects.all()        
+            'item':Tea_item.objects.all(),
+            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],        
             }
         return render(request, 'tea/tea_item.html', context)
     else:
@@ -142,6 +146,7 @@ def bill(request):
             'cart':Cart.objects.filter(employee_id=e.id),
             'item':Tea_item.objects.filter(status=1),
             'amount':amount,
+            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
         }
         return render(request, 'tea/bill.html', context)
     else:
@@ -158,7 +163,8 @@ def completed_view_bill(request, order_filter):
             'order_master':OrderMaster.objects.filter(order_filter=order_filter).first(),
             'order_detail':OrderDetail.objects.filter(order_filter=order_filter),
             'tea':Tea_profile.objects.all().first(),
-            'total_amount':o['total_price__sum']
+            'total_amount':o['total_price__sum'],
+            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
         }
         return render(request, 'tea/completed_view_bill.html', context)
     else:

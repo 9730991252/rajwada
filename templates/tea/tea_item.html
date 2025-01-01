@@ -2,7 +2,10 @@
 {% block head %}
 {% endblock head %}
 {% block content %}
-<div>welcome - {{e.name}}</div>
+{% load home_tag %}
+<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total %}
+</b></div>
+
 {% include 'include/tea_menu.html' %}
 <div class="container">
     <!-- Button trigger modal -->

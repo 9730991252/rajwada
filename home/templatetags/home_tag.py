@@ -13,6 +13,15 @@ def cart_item_detail(item_id, employee_id):
         return {'qty':cart.qty, 'amount':cart.total_amount}
     else:
         return {'qty':0, 'amount':0}
+    
+@register.simple_tag()
+def todayes_tea_total():
+    t =  OrderMaster.objects.filter(ordered_date__icontains=date.today()).aggregate(Sum('total_price'))
+    t =  t['total_price__sum']
+    if t:
+        return t
+    else:
+        return 0
         
 @register.simple_tag()
 def hotel_cart_item_detail(table_id, item_id):
@@ -21,6 +30,8 @@ def hotel_cart_item_detail(table_id, item_id):
         return {'qty':cart.qty, 'amount':cart.total_amount}
     else:
         return {'qty':0, 'amount':0}
+    
+    
     
 
 # @register.inclusion_tag('inclusion_tag/office/pendding_completed_farmer_bill.html')
