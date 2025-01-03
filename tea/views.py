@@ -16,6 +16,37 @@ def tea_home(request):
     else:
         return redirect('/login/')
     
+def report(request):
+    if request.session.has_key('tea_mobile'):
+        mobile = request.session['tea_mobile']
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
+        item = []
+        from_date = ''
+        to_date = ''
+        total_amount = 0
+        if 'search_report' in request.POST:
+            from_date = request.POST['from_date']
+            to_date = request.POST['to_date']
+            total_amount = 0
+            for i in Tea_item.objects.all():
+                qty = OrderDetail.objects.filter(item_id=i.id,date__range=[from_date, to_date] ).aggregate(Sum('qty'))['qty__sum']
+                total_price = OrderDetail.objects.filter(item_id=i.id, date__range=[from_date, to_date]).aggregate(Sum('total_price'))['total_price__sum']
+                if total_price == None:
+                    total_price = 0
+                total_amount += total_price
+                if qty != None:
+                    item.append({'name':i.name, 'qty':qty, 'total_price':total_price})        
+        context={
+            'e':e,
+            'item':item,
+            'from_date':from_date,
+            'to_date':to_date,
+            'total_amount':total_amount,
+        }
+        return render(request, 'tea/report.html', context)
+    else:
+        return redirect('/login/')
+    
 def completed_bill(request):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
