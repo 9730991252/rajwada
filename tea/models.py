@@ -43,3 +43,15 @@ class OrderDetail(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True,null=True)
     date=models.DateField(auto_now_add=True,null=True)
     order_filter=models.IntegerField(default=True)
+    
+    
+class Tea_category(models.Model):
+    name = models.CharField(max_length=100)
+    order_by = models.IntegerField(default=1)
+    status = models.IntegerField(default=1)
+    
+    
+class Select_category_item(models.Model):
+    category = models.ForeignKey(Tea_category,on_delete=models.PROTECT,null=True)
+    item = models.ForeignKey(Tea_item,on_delete=models.PROTECT,null=True)
+    status = models.IntegerField(default=1)

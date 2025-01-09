@@ -8,5 +8,8 @@ path('completed_view_bill/<int:order_filter>', views.completed_view_bill, name='
 path('profile/', views.profile, name='profile'),
 path('completed_bill/', views.completed_bill, name='completed_bill'),
 path('report/', views.report, name='report'),
+path('category/', views.category, name='category'),
+    path('select_category_items/<int:category_id>', views.select_category_items, name='select_category_items'),
+
 
 ]

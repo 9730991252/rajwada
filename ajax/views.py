@@ -6,6 +6,22 @@ from tea.models import *
 from django.template.loader import *
 from django.db.models import Avg, Sum, Min, Max
 # Create your views here.
+
+def search_tea_item_by_category(request):
+    if request.method == 'GET':
+        c_id = request.GET['c_id']
+        mobile = request.session['tea_mobile']
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
+        item_id = [] 
+        for i in Select_category_item.objects.filter(category_id=c_id):
+            item_id.append(i.item_id)
+        context={
+            'e': e,
+            'item':Tea_item.objects.filter(id__in=item_id),
+        }
+        t = render_to_string('ajax/search_tea_item.html', context) 
+    return JsonResponse({'t': t})
+
 def participant_list(request):
     if request.method == 'GET':
         c = []
@@ -146,3 +162,26 @@ def filter_items_by_category(request):
         }
         t = render_to_string('ajax/filter_items_by_category.html', context)
     return JsonResponse({'t': t})
+
+
+def select_category_item(request):
+    if request.method == 'GET':
+        category_id = request.GET['category_id']
+        item_id = request.GET['item_id']
+        s = Select_category_item.objects.filter(item_id=item_id,category_id=category_id).first()
+        if s:
+            if s.status == 1:
+                status = 0
+                s.status = 0
+                s.save()
+            else:
+                status = 1
+                s.status = 1
+                s.save()
+        else:
+            status = 1
+            Select_category_item(
+                item_id=item_id,
+                category_id=category_id
+            ).save()
+        return JsonResponse({'status': status})

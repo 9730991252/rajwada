@@ -16,6 +16,71 @@ def tea_home(request):
     else:
         return redirect('/login/')
     
+def select_category_items(request, category_id):
+    if request.session.has_key('tea_mobile'):
+        mobile = request.session['tea_mobile']
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
+        if e:
+            item = []
+            for i in Tea_item.objects.filter(status=1):
+                selected_status = 0
+                if Select_category_item.objects.filter(item_id=i.id,category_id=category_id,status = 1):
+                    selected_status = 1 
+                print(selected_status)
+                item.append({'name':i.name, 'selected_status':selected_status ,'id':i.id})        
+        context={
+            'e':e,
+            'item':item,
+            'category':Tea_category.objects.filter(id=category_id).first(),
+        }
+        return render(request, 'tea/select_category_items.html', context)
+    else:
+        return redirect('/select_category_items/')
+    
+def category(request):
+    if request.session.has_key('tea_mobile'):
+        mobile = request.session['tea_mobile']
+        e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
+        if 'add_category'in request.POST:
+            name = request.POST.get('name')
+            Tea_category(
+                name=name,
+            ).save()
+            return redirect('category')
+        if 'edit_category'in request.POST:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            i = Tea_category.objects.filter(id=id).first()
+            i.name = name
+            i.save()
+            return redirect('category')
+        if 'active'in request.POST:
+            id = request.POST.get('id')
+            i = Tea_category.objects.filter(id=id).first()
+            i.status = 0
+            i.save()
+            return redirect('category')
+        if 'deactive'in request.POST:
+            id = request.POST.get('id')
+            i = Tea_category.objects.filter(id=id).first()
+            i.status = 1
+            i.save()
+            return redirect('category')
+        if 'save_order_by'in request.POST:
+            c_id = request.POST.get('id')
+            order_by = request.POST.get('order_by')
+            c = Tea_category.objects.filter(id=c_id).first()
+            c.order_by = order_by
+            c.save()
+            return redirect('category')        
+        context={
+            'e':e,
+            'category':Tea_category.objects.all()
+        }
+        return render(request, 'tea/category.html', context)
+    else:
+        return redirect('/login/')
+    
 def report(request):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
@@ -148,7 +213,6 @@ def bill(request):
                 Cart.objects.filter(id=cart_id).delete()
                 return redirect('bill')
             if 'complete_order'in request.POST:
-                print('hi')
                 amount = Cart.objects.filter(employee_id=e.id).aggregate(Sum('total_amount'))
                 amount = amount['total_amount__sum']
                 order_filter = OrderMaster.objects.filter().count()
@@ -178,6 +242,8 @@ def bill(request):
             'item':Tea_item.objects.filter(status=1),
             'amount':amount,
             'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
+            'category':Tea_category.objects.filter(status=1).order_by('-order_by'),
+
         }
         return render(request, 'tea/bill.html', context)
     else:
