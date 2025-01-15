@@ -2,7 +2,7 @@
  
 _______________________________________
 
-root
+r‍oot
 cd rajwada
 git pull
 source venv/bin/activate
