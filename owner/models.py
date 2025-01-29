@@ -35,6 +35,7 @@ class Hotel_cart(models.Model):
     total_amount = models.FloatField(default=0)
     qty = models.IntegerField()
     cook_status = models.CharField(default='Pendding', max_length=100)
+    date = models.DateTimeField(auto_now_add=True, null=True)
     
 class Hotel_order_Master(models.Model):
     table=models.ForeignKey(Table,on_delete=models.PROTECT,default=True)

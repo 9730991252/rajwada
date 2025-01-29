@@ -24,6 +24,7 @@
                     <button class="btn btn-success" type="submit" name="Delivere">पाठवा</button>
                 </form>
             </td>
+            <td>{{d.date}}</td>
         </tr>
           {% endfor %}
 
@@ -56,6 +57,7 @@
                 <button type="submit" class="btn btn-primary" name="Accept_item_one">{{d.qty}}</button>
               </form>
             </td>
+            <td>{{d.date}}</td>
           </tr>
             {% endfor %}
   
@@ -77,7 +79,9 @@
               <td>{{d.item.name}}</td>
               <td>{{d.qty}}</td>
               <td>{{d.cook_status}}</td>
+              <td>{{d.date}}</td>
             </tr>
+
             {% endfor %}
     
         </tbody>
