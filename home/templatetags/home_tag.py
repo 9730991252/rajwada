@@ -33,7 +33,10 @@ def hotel_cart_item_detail(table_id, item_id):
     
 @register.simple_tag()
 def get_percenteg_amount(percent, without_gst_amount):
-    return (int(math.floor(float(without_gst_amount))) / 100) * int(percent)    
+    if without_gst_amount:
+        return (int(math.floor(float(without_gst_amount))) / 100) * int(percent)    
+    else:
+        return 0
     
     
 

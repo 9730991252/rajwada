@@ -464,7 +464,10 @@ def view_order(request,table_id):
                 order_filter = (int(Hotel_order_Master.objects.all().count()) + 1)
                 t =Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
                 if t != None:
-                    t -= Hotel_cart.objects.filter(table_id=table_id, item__gst_status=0).aggregate(Sum('total_amount'))['total_amount__sum']
+                    ta = Hotel_cart.objects.filter(table_id=table_id, item__gst_status=0).aggregate(Sum('total_amount'))['total_amount__sum']
+                    if ta != None:
+                        t -= ta
+                    
                 gst = (t / 100) * 5
                 s_gst = (gst / 2)
                 c_gst = (gst / 2)
