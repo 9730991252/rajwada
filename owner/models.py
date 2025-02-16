@@ -18,7 +18,6 @@ class Category(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField(null=True)
-    gst_status = models.IntegerField(default=1)
     status = models.IntegerField(default=1)
     
 class Item_category(models.Model):
