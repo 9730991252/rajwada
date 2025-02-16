@@ -19,6 +19,8 @@ class Item(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField(null=True)
     status = models.IntegerField(default=1)
+    gst_status = models.IntegerField(default=1)
+
     
 class Item_category(models.Model):
     item = models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
