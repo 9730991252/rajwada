@@ -17,4 +17,5 @@ urlpatterns = [
     path('tea_employee/', views.tea_employee, name='tea_employee'),
     path('complate_order/', views.complate_order, name='complate_order'),
     path('complate_view_order/<int:order_filter>', views.complate_view_order, name='complate_view_order'),
+    path('item_detail/<int:id>', views.item_detail, name='item_detail'),
 ]

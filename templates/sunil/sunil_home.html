@@ -54,6 +54,7 @@
                   <th scope="col">Mobile</th>
                   <th scope="col">Pin</th>
                   <th scope="col">Status</th>
+                  <th scope="col">login</th>
                 </tr>
             </thead>
             <tbody>
@@ -71,6 +72,12 @@
                             {% else %}
                                 <button class="btn btn-danger" type="submit" name="deactive">Deactive</button>
                             {% endif %}
+                        </form>
+                    </td>
+                    <td>
+                        <form class="" method="POST">{% csrf_token %} 
+                            <input type="hidden" name="id" value="{{o.id}}"> 
+                            <button class="btn btn-success" type="submit" name="login">Login</button>
                         </form>
                     </td>
                 </tr>

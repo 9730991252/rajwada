@@ -1,0 +1,92 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+<div class="container">
+    <div class="row">
+
+        
+        <div class="text-center col-sm-6">
+            <b id="main_item_name">{{item.name}} <button class="btn" onclick="edit_item_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
+            <form method="POST" id="edit_item_name" style="display: none;gap: 10px;justify-content: center;align-items: center;">{% csrf_token  %}<input type="text" value="{{item.name}}" name="name" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_item_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
+            <script>
+                function edit_item_name(){
+                    document.getElementById('edit_item_name').style.display = 'flex'
+                    document.getElementById('main_item_name').style.display = 'none'
+                }
+        </script>
+    </div>
+    
+    <div class="text-center col-sm-6">
+        <b id="main_price_name">Rs.{{item.price}} <button class="btn" onclick="edit_item_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
+        <form method="POST" id="edit_price_name" style="display: none;gap: 10px;justify-content: center;align-items: center;">{% csrf_token  %}<input type="text" value="{{item.price}}" name="price" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_price_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
+        <script>
+            function edit_item_name(){
+                document.getElementById('edit_price_name').style.display = 'flex'
+                document.getElementById('main_price_name').style.display = 'none'
+            }
+            </script>
+    </div>
+    </div>
+    
+</div>
+
+<!------------------------category sec-------------------------->
+
+<div class="container" style="display: grid;grid-template-columns: 1fr 1fr; gap: 10px;">
+
+  <div>
+  <ul class="list-group ">
+  <li class="text-center list-group-item " aria-current="true">
+    <b>Select Category</b>
+    <button type="button" class="btn btn-success btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#Select_category"><i class="fa fa-plus" aria-hidden="true"></i></button>
+  </li>
+    <!-- Modal -->
+    <div class="modal fade" id="Select_category" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST">{% csrf_token %}
+              <div class="mb-3">
+                  <label for="">Select Category</label>
+                    <select class="form-control" name="id">
+                      {% for c in category %}
+                        <option value="{{c.id}}" >{{c.name}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>                                                
+                <div class="mb-3">                                      
+                  <button type="submit" class="btn btn-primary" name="select_item_category">select</button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  
+  {% for c in item_category %}
+    <li class="text-center list-group-item " style="display: flex;gap: 10px;justify-content: space-between;" aria-current="true">{{c.category.name}}  <form method="POST">{% csrf_token %}<input type="hidden" name="id" value="{{c.category.id}}"> <button type="submit" name="unselect_category" class="btn btn-sm btn-danger">Remove</button></form></li>
+  {% endfor %}
+  
+  </ul>
+</div>
+
+    <div class="border text-center" style="height: fit-content;border-radius: 5px;padding: 10px;">
+
+        <div style="display: flex;justify-content: space-between;"><div>Status</div> <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{item.id}}"> {% if item.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div> </div>
+        <div style="display: flex;justify-content: space-between;margin-top: 5px;"><div>Gst</div>  <div></div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{item.id}}"> {% if item.gst_status == 1 %}<button class="btn btn-success" type="submit" name="gst_active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="gst_deactive">Deactive</button>{% endif %}</form></div>
+
+    </div>
+
+</div>
+  <!------------------------end category sec-------------------------->
+{% endblock content %}

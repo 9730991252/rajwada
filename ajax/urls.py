@@ -10,5 +10,6 @@ urlpatterns = [
     path('search_hotel_item', views.search_hotel_item, name='search_hotel_item'),
     path('filter_items_by_category', views.filter_items_by_category, name='filter_items_by_category'),
     path('select_category_item', views.select_category_item, name='select_category_item'),
-    path('search_tea_item_by_category', views.search_tea_item_by_category, name='search_tea_item_by_category')
+    path('search_tea_item_by_category', views.search_tea_item_by_category, name='search_tea_item_by_category'),
+    path('select_discount_percent', views.select_discount_percent, name='select_discount_percent')
     ]

@@ -53,6 +53,30 @@ def search_hotel_item(request):
         }
         t = render_to_string('ajax/search_hotel_item.html', context) 
     return JsonResponse({'t': t})
+import math
+def select_discount_percent(request):
+    if request.method == 'GET':
+        order_filter = request.GET['order_filter']
+        without_gst_amount = request.GET['without_gst_amount']
+        percent = request.GET['percent']
+        
+        discount_amount = (int(math.floor(float(without_gst_amount))) / 100) * int(percent)
+        print(discount_amount)
+        
+        order_master = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
+        order_master.discount_amount = discount_amount
+        order_master.discount_percent = percent
+        
+        total_amount = math.floor(int(order_master.total_price) + order_master.s_gst + order_master.c_gst - int(order_master.discount_amount))
+        
+        order_master.cash_amount = int(total_amount)
+        order_master.phone_pe_amount = 0
+        order_master.pos_machine_amount = 0
+        
+            
+        order_master.save()
+
+    return JsonResponse({'t': ''})
 
 def add_item_to_cart(request):
     if request.method == 'GET':
@@ -156,7 +180,14 @@ def save_winner(request):
 def filter_items_by_category(request):
     if request.method == 'GET':
         category_id = request.GET['category_id']
-        items = Item.objects.filter(category_id=category_id)
+        
+        item_id = []
+        
+        for i in Item_category.objects.filter(category_id=category_id, status = 1):
+            item_id.append(i.item_id)
+        
+        items = Item.objects.filter(id__in=item_id, status=1)
+        
         context = {
             'item': items,
         }

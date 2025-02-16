@@ -45,6 +45,11 @@ def sunil_home(request):
             o.status = 1
             o.save()
             return redirect('sunil_home')
+        if 'login'in request.POST:
+            id = request.POST.get('id')
+            o = Owner.objects.filter(id=id).first()
+            request.session['owner_mobile'] = o.mobile
+            return redirect('owner_home')
         context={
             'owner':Owner.objects.all()
         }

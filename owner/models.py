@@ -16,11 +16,15 @@ class Category(models.Model):
     status = models.IntegerField(default=1)
     
 class Item(models.Model):
-    category = models.ForeignKey(Category,on_delete=models.PROTECT,null=True)
     name = models.CharField(max_length=100)
     price = models.FloatField(null=True)
+    gst_status = models.IntegerField(default=1)
     status = models.IntegerField(default=1)
     
+class Item_category(models.Model):
+    item = models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
+    category = models.ForeignKey(Category,on_delete=models.PROTECT,null=True)
+    status = models.IntegerField(default=1)
 
 class Table(models.Model):
     table_number = models.CharField(max_length=100)
@@ -42,6 +46,15 @@ class Hotel_order_Master(models.Model):
     total_price=models.FloatField(default=0,null=True)
     ordered_date = models.DateTimeField(auto_now_add=True,null=True)
     order_filter=models.IntegerField(default=True)
+    s_gst = models.FloatField(default=0,null=True)
+    c_gst = models.FloatField(default=0,null=True)
+    discount_percent = models.IntegerField(default=0)
+    discount_amount = models.FloatField(default=0, null=True)
+    cash_amount = models.FloatField(default=0, null=True)
+    phone_pe_amount = models.FloatField(default=0, null=True)
+    pos_machine_amount = models.FloatField(default=0, null=True) 
+
+    
 
 class Hotel_order_Detail(models.Model):
     item=models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
