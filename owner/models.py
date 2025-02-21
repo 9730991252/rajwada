@@ -54,7 +54,7 @@ class Hotel_order_Master(models.Model):
     cash_amount = models.FloatField(default=0, null=True)
     phone_pe_amount = models.FloatField(default=0, null=True)
     pos_machine_amount = models.FloatField(default=0, null=True) 
-    paid_status = models.IntegerField(default=0)
+    # paid_status = models.IntegerField(default=0)
     
 
     
