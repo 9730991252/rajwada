@@ -401,20 +401,20 @@ def item_detail(request, id):
                 return redirect(f'/owner/item_detail/{id}')
             if 'select_item_category'in request.POST:
                 category_id = request.POST.get('id')
-                ic = Item_category.objects.filter(item_id=id, category_id=category_id).first()
+                ic = Select_item_category.objects.filter(item_id=id, category_id=category_id).first()
                 if ic:
                     if ic.status == 0:
                         ic.status = 1
                         ic.save()
                 else:
-                    Item_category(
+                    Select_item_category(
                         item_id=item.id,
                         category_id=category_id
                     ).save()
                 return redirect(f'/owner/item_detail/{id}')
             if 'unselect_category'in request.POST:
                 c_id = request.POST.get('id')
-                ic = Item_category.objects.filter(item_id=id, category_id=c_id).first()
+                ic = Select_item_category.objects.filter(item_id=id, category_id=c_id).first()
                 ic.status = 0
                 ic.save()
                 return redirect(f'/owner/item_detail/{id}')
@@ -446,7 +446,7 @@ def item_detail(request, id):
             'o':o,
             'item':item,
             'category':Category.objects.filter(status=1),
-            'item_category':Item_category.objects.filter(item_id=item.id, status=1)
+            'Select_item_category':Select_item_category.objects.filter(item_id=item.id, status=1)
         }
         return render(request, 'owner/item_detail.html', context)
     else:

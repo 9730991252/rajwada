@@ -22,10 +22,10 @@ class Item(models.Model):
     gst_status = models.IntegerField(default=1)
 
     
-class Item_category(models.Model):
-    item = models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
-    category = models.ForeignKey(Category,on_delete=models.PROTECT,null=True)
-    status = models.IntegerField(default=1)
+# class Select_item_category(models.Model):
+    # item = models.ForeignKey(Item,on_delete=models.PROTECT,null=True)
+    # category = models.ForeignKey(Category,on_delete=models.PROTECT,null=True)
+    # status = models.IntegerField(default=1)
 
 class Table(models.Model):
     table_number = models.CharField(max_length=100)

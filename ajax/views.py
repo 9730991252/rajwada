@@ -183,7 +183,7 @@ def filter_items_by_category(request):
         
         item_id = []
         
-        for i in Item_category.objects.filter(category_id=category_id, status = 1):
+        for i in Select_item_category.objects.filter(category_id=category_id, status = 1):
             item_id.append(i.item_id)
         
         items = Item.objects.filter(id__in=item_id, status=1)
