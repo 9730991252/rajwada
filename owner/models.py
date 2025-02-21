@@ -54,6 +54,8 @@ class Hotel_order_Master(models.Model):
     cash_amount = models.FloatField(default=0, null=True)
     phone_pe_amount = models.FloatField(default=0, null=True)
     pos_machine_amount = models.FloatField(default=0, null=True) 
+    paid_status = models.IntegerField(default=0)
+    
 
     
 
@@ -63,6 +65,7 @@ class Hotel_order_Detail(models.Model):
     price=models.FloatField(default=0,null=True)
     total_price=models.FloatField(default=0,null=True)
     order_filter=models.IntegerField(default=True)
+    
 class Bill(models.Model):
     added_by = models.ForeignKey(Owner,on_delete=models.PROTECT,null=True)
     order_master = models.ForeignKey(Hotel_order_Master,on_delete=models.PROTECT,null=True)

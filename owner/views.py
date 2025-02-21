@@ -78,10 +78,16 @@ def running_table(request):
                 runing_table.append({'id':t.id,'table_number':t.table_number})
                 status = 'yes'        
             table.append({'id':t.id,'table_number':t.table_number,'status':status})
+        if 'chang_paid_status'in request.POST:
+            bill_id = request.POST.get('bill_id')
+            b = Hotel_order_Master.objects.filter(id=bill_id).first()
+            b.paid_status = 1
+            b.save()
         context={
             'o':o,
             'table':table,
-            'runing_table':runing_table
+            'runing_table':runing_table,
+            'unpaid_bills':Hotel_order_Master.objects.filter(paid_status=0).order_by('-id')[0:10]
         }
         return render(request, 'owner/running_table.html', context)
     else:

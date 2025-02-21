@@ -4,29 +4,46 @@
 {% block content %}
 <div>welcome - {{o.owner_name}}</div>
 {% include 'include/owner_menu.html' %}
-<div  class="container border my-2">
-    <h5 class="text-center bg"> <b>चालू टेबल </b></h5>
-  </div>
-    <div class="container border">
-      
+  <div style="display: grid;grid-template-columns: 1fr 1fr;">
+    
+    <div class="border">
+      <div  class="border">
+        <h5 class="text-center bg"> <b>चालू टेबल </b></h5>
+      </div>
       <table class="table">
         <thead>
           <tr >
-            <th scope="col" class="text-center">Table Number</th>
-            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for t in runing_table %}
           <tr>
-            <td><h1 class="my-3 text-center">{{t.table_number}}</h1></td>
-            <td><a href="/owner/view_order/{{t.id}}"  class="btn btn-success btn-lg my-3">View</a></td>
+            <td><h6 class="text-center">{{t.table_number}} Table</h6></td>
+            <td><a href="/owner/view_order/{{t.id}}"  class="btn btn-success btn-sm">View</a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    
+    <div class="border">
+      <div  class="border" style="height: 35px;display: flex;justify-content: center;align-items: center;">
+        <h6 class="text-center lg">Paid/Unpaid Last 10 Bills</h6>
+      </div>
+      {% for t in unpaid_bills %}
+      <div style="width: 100%;height: 40px; display: grid; grid-template-columns: 3fr 1fr 1fr 1fr;border-bottom: 1px solid rgb(170, 170, 160); justify-content: center;align-items: center;">
+        <div class="text-center"><b>{{t.table.table_number}}</b> Table, Bill No.<b>{{t.order_filter}}</b></div>
+        <div><b class="text-danger">Rs.{{t.total_price}}</b></div>
+        <div style="display: flex;justify-content: center;">
+          <form method="POST" >{% csrf_token %}
+            <input type="hidden" name="bill_id" value="{{t.id}}">
+            <button type="submit" name="chang_paid_status" class="btn btn-success btn-sm">Paid</button>
+          </form>
+        </div>
+        <div><a href="/owner/complate_view_order/{{t.order_filter}}"  class="btn btn-primary btn-sm">View</a></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
     <br>
 
     <div  class="container border">
