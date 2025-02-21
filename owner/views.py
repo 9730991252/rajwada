@@ -453,6 +453,7 @@ def item_detail(request, id):
         return redirect('/login/')
     
     
+@csrf_exempt
 def view_order(request,table_id):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
