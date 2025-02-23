@@ -585,6 +585,11 @@ def complate_view_order(request,order_filter):
                 order_master.save()
                 return redirect(f'/owner/complate_view_order/{order_filter}')
             without_gst_amount = Hotel_order_Detail.objects.filter(order_filter=order_filter, item__gst_status=0).aggregate(Sum('total_price'))['total_price__sum']
+            if 'chang_paid_status'in request.POST:
+                order_master.paid_status = 1
+                order_master.save()
+                return redirect(f'/owner/complate_view_order/{order_filter}')
+                
         context={
             'o':o,
             'order_master':order_master,

@@ -62,9 +62,10 @@
     
     </div>
 
-    <form method="POST"> {% csrf_token %}
+    <form method="POST" id="complete_order_btn" {% if cart %}{% else %} style="display: none;" {% endif %} > {% csrf_token %}
         <div class="container"><button type="submit"  name="complete_order" class="btn btn-danger " >Complete Order</button></div>
-      </form>    
+      </form> 
+        
   
 
 
@@ -91,7 +92,7 @@
         grid-template-columns: repeat(auto-fit, 300px);
         gap: 10px;
         width: 80%;
-        margin: auto;
+        margin: 20px auto;
         justify-content: center;
     }
     .dish_box{
@@ -99,6 +100,7 @@
         padding: 10px;
         border-radius: 10px;
         text-align: center;
+        height: fit-content;
     }
     .name{
         font-weight: 700px;
@@ -209,7 +211,9 @@ function add_to_cart(id,price){
     },
     success: function(res){
         document.getElementById('amount').value = res.amount
+        document.getElementById('complete_order_btn').style.display = 'unset'
         document.getElementById('cart_item').innerHTML = res.t
+
     }
   })
 }
