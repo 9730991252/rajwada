@@ -8,20 +8,31 @@
     <div class="row">
 
         
-        <div class="text-center col-sm-6">
-            <b id="main_item_name">{{item.name}} <button class="btn" onclick="edit_item_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
-            <form method="POST" id="edit_item_name" style="display: none;gap: 10px;justify-content: center;align-items: center;">{% csrf_token  %}<input type="text" value="{{item.name}}" name="name" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_item_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
-            <script>
-                function edit_item_name(){
-                    document.getElementById('edit_item_name').style.display = 'flex'
-                    document.getElementById('main_item_name').style.display = 'none'
-                }
+      <div class="text-center">
+        <b id="main_item_english_name"><b style="font-weight: 400;">English Name</b>  {{item.english_name}} <button class="btn" onclick="edit_item_english_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
+        <form method="POST" id="edit_item_english_name" style="display: none;gap: 10px;justify-content: center;align-items: center;"><input type="text" value="{{item.english_name}}" name="english_name" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_item_english_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
+        <script>
+            function edit_item_english_name(){
+            document.getElementById('edit_item_english_name').style.display = 'flex'
+            document.getElementById('main_item_english_name').style.display = 'none'
+            }
         </script>
     </div>
-    
-    <div class="text-center col-sm-6">
+    <div class="container">
+        <div class="text-center">
+            <b id="main_item_marathi_name"><b style="font-weight: 400;">Marathi Name</b>  {{item.marathi_name}} <button class="btn" onclick="edit_item_marathi_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
+            <form method="POST" id="edit_item_marathi_name" style="display: none;gap: 10px;justify-content: center;align-items: center;"><input type="text" value="{{item.marathi_name}}" name="marathi_name" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_item_marathi_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
+            <script>
+                function edit_item_marathi_name(){
+                document.getElementById('edit_item_marathi_name').style.display = 'flex'
+                document.getElementById('main_item_marathi_name').style.display = 'none'
+                }
+            </script>
+        </div>
+    </div>
+    <div class="text-center ">
         <b id="main_price_name">Rs.{{item.price}} <button class="btn" onclick="edit_item_name()"><i class="fa fa-pencil" aria-hidden="true"></i></button></b>
-        <form method="POST" id="edit_price_name" style="display: none;gap: 10px;justify-content: center;align-items: center;">{% csrf_token  %}<input type="text" value="{{item.price}}" name="price" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_price_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
+        <form method="POST" id="edit_price_name" style="display: none;gap: 10px;justify-content: center;align-items: center;">{% csrf_token  %}<input type="number" value="{{item.price}}" name="price" ><button style="width: 20px;height: 20px;display: flex;justify-content: center;align-items: center;" type="submit" name="edit_price_name" class="btn btn-success btn-sm" onclick="location.reload()"><i class="fa fa-check" aria-hidden="true"></i></button></form>
         <script>
             function edit_item_name(){
                 document.getElementById('edit_price_name').style.display = 'flex'
@@ -29,8 +40,9 @@
             }
             </script>
     </div>
-    </div>
     
+  </div>
+  
 </div>
 
 <!------------------------category sec-------------------------->
@@ -79,13 +91,56 @@
   
   </ul>
 </div>
+<style>
+  .status_box{
+    padding: 1px;
+    background-color: black;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 11px;
+    gap: 1px;
+    overflow: hidden;
+    height: fit-content;
+    div{
+      background-color: white;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .d1{
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+    .d2{
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+  }
+  </style>
 
-    <div class="border text-center" style="height: fit-content;border-radius: 5px;padding: 10px;">
-
-        <div style="display: flex;justify-content: space-between;"><div>Status</div> <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{item.id}}"> {% if item.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div> </div>
-        <div style="display: flex;justify-content: space-between;margin-top: 5px;"><div>Gst</div>  <div></div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{item.id}}"> {% if item.gst_status == 1 %}<button class="btn btn-success" type="submit" name="gst_active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="gst_deactive">Deactive</button>{% endif %}</form></div>
-
-    </div>
+<div class="container status_box" style="width: 340px;" id="status_box">
+    <div class="d1">Discount Status</div>
+      <div class="d2" >
+        <form class="" style="display: flex;justify-content: center;align-items: center;" method="POST">
+          {% csrf_token %}
+              {% if item.discount_status == 1 %}
+              <div class="form-check form-switch form-check-reverse lable ">
+                <button class="btn" type="submit" name="discount_active" id="gst_active_btn">
+                  <input class="form-check-input" onclick="document.getElementById('gst_active_btn').click()" type="checkbox" id="flexSwitchCheckReverse" name="life_weight"  checked >                        
+                </button>
+              </div>
+              <div>ON</div>
+              {% else %}
+              <div class="form-check form-switch form-check-reverse lable ">
+                <button class="btn" type="submit" name="discount_deactive" id="discount_deactive_btn">
+                    <input class="form-check-input" onclick="document.getElementById('discount_deactive_btn').click()"  type="checkbox" id="flexSwitchCheckReverse" name="life_weight" >                        
+                </button>
+              </div>
+              <div>OFF</div>
+              {% endif %}
+        </form>
+      </div>
 
 </div>
   <!------------------------end category sec-------------------------->

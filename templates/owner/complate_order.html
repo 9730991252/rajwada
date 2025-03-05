@@ -2,93 +2,87 @@
 {% block head %}
 {% endblock head %}
 {% block content %}
+{% load home_tag %}
 <div>welcome - {{o.owner_name}}</div>
+</b></div>
+
 {% include 'include/owner_menu.html' %}
-
-
-
-<style>
-    *{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body{
-  height: 100%;
-  width: 100%;
-}
-
-.Pagination{
-  margin-bottom: 50px;
-}
-
-</style>
-<diV class="container mt-5 p-5 border rounded">
-  <a href="/running_table"   class="btn btn-success px-5 btn-sm" >Running Table</a>
-
-</diV>
-
-<div class="container border">
-  <h3>Your Complate Order </h3>
-  <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Bill Number</th>
-          <th scope="col">Table Number</th>
-          <th scope="col">Date</th>
-          <th scope="col">Total Amount</th>
-          <th scope="col">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-          {% for m in order_master %}
-        <tr>
-          <td>{{m.order_filter}}</td>
-          <td>{{m.table.table_number}}</td>
-          <td>{{m.ordered_date}}</td>
-          <td>{{m.total_price}}</td>
-          <td><a href="/owner/complate_view_order/{{m.order_filter}}"  class="btn btn-primary">View</a></td>
-        </tr>
-           {% endfor %}
-
-      </tbody>
-    </table>
-
-                <!-- Pagination -->
- 
-  <div class="container Pagination">
-    <div class="mx-5">
-    <nav aria-label="...">
-      <ul class="pagination">
-        {% if m.has_previous %}
-        <li class="page-item ">
-          <a class="page-link" href="/complate_order/?page={{m.previous_page_number}}">Previous</a>
-        </li>
-        <li class="page-item ">
-       <a class="page-link" href="/complate_order/?page=1" >First</a>
-      </li>
+<div class="container">
+<div class="card-container">
+    {% for bill in order_master %}
+    <div class="card">
+        <h6>Bill Number: {{ bill.order_filter }}</h6>
+        <p>Total Amount: {{ bill.total_price }}</p>
+        <p> {{ bill.ordered_date }}</p>
+        {% if bill.status == 1 %}
+            {% if bill.cancel_btn_show_status == 1 %}
+                <div style="display: grid;grid-template-columns: 3fr 0.5fr 0.5fr; gap: 10px;">
+                    <a href="/owner/complate_view_order/{{bill.order_filter}}" class="btn btn-success ">View</a>
+                    <a href="/owner/edit_bill/{{bill.id}}" class="btn btn-primary">Edit</a>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal{{bill.id}}">
+                        Cancel
+                    </button>
+                </div> 
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{bill.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Cancel Conformetion</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                    
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_filter" value="{{bill.order_filter}}">
+                                    <button name="cancel_bill" class="btn btn-danger "  style="width: fit-content;">Cancel</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+            {% else %}
+                <a href="/owner/complate_view_order/{{bill.order_filter}}" class="btn btn-success ">View</a>
+            {% endif %}
+        {% else %}
+            <div class="text-danger ">This Order Is Canceld</div>
+            <a href="/owner/complate_view_order/{{bill.order_filter}}" class="btn btn-success ">View</a>
         {% endif %}
-  
-        <li class="page-item " aria-current="page">
-          <a class="page-link" href="/complate_order/?page=2">2</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="/complate_order/?page=3">3</a></li>
-        {% if m.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="/complate_order/?page={{m.next_page_number}}">Next</a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-  </div>
-  <!-- Pagination -->
-
-
+    </div>
+    {% endfor %}
 </div>
+</div>
+<style>
+    a{
+        text-decoration: none;
+    }
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    text-align: center;
+    justify-content: center;
+}
 
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+.card h2 {
+    margin-top: 0;
+}
 
-
+.card p {
+    margin: 8px 0;
+}
+</style>
 {% endblock content %}

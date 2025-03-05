@@ -6,6 +6,53 @@ from tea.models import *
 from django.template.loader import *
 from django.db.models import Avg, Sum, Min, Max
 # Create your views here.
+def chang_teble_status(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        t = Table.objects.filter(id=id).first()
+        if t.status == 1:
+            t.status = 0
+            t.save()
+        else:
+            t.status = 1
+            t.save()
+    t = render_to_string('ajax/chang_teble_status.html', {'t':t})
+    return JsonResponse({'t':t})
+def chang_teble_name(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        name = request.GET['name']
+        t = Table.objects.filter(id=id).first()
+        t.table_number = name
+        t.save()
+        t = Table.objects.filter(id=id).first()
+    t = render_to_string('ajax/chang_teble_status.html', {'t':t})
+    return JsonResponse({'t':t})
+
+def select_item_category(request):
+    if request.method == 'GET':
+        c_id = request.GET['c_id']
+        item_id = request.GET['item_id']
+        category_item = Select_item_category.objects.filter(category_id=c_id,item_id=item_id).first()
+        c = Category.objects.filter(id=c_id).first()
+        if category_item:
+            if category_item.status==0:
+                category_item.status = 1
+                category_item.save()
+            else:
+                category_item.status = 0
+                category_item.save()
+        else:
+            Select_item_category(
+                category_id=c_id,
+                item_id=item_id,
+            ).save()
+    context = {
+        'c':c
+    }
+    t = render_to_string('ajax/select_item_category.html', context)
+    return JsonResponse({'t':t})
+
 
 def search_tea_item_by_category(request):
     if request.method == 'GET':
@@ -67,7 +114,7 @@ def select_discount_percent(request):
         order_master.discount_amount = discount_amount
         order_master.discount_percent = percent
         
-        total_amount = math.floor(int(order_master.total_price) + order_master.s_gst + order_master.c_gst - int(order_master.discount_amount))
+        total_amount = math.floor(int(order_master.total_price) - int(order_master.discount_amount))
         
         order_master.cash_amount = int(total_amount)
         order_master.phone_pe_amount = 0
@@ -107,6 +154,32 @@ def add_item_to_cart(request):
         t = render_to_string('ajax/item_to_cart.html', context) 
     return JsonResponse({'t': t,'amount':amount})
 
+def add_item_to_cart_edit(request):
+    if request.method == 'GET':
+        item_id = request.GET['item_id']
+        price = request.GET['price']
+        qty = request.GET['qty']
+        total_amount = request.GET['total_amount']
+        order_filter = request.GET['order_filter']
+        Hotel_order_Detail(
+            item_id=item_id,
+            qty=qty,
+            price=price,
+            total_price=total_amount,
+            order_filter=order_filter
+        ).save()
+        om = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
+        od = Hotel_order_Detail.objects.filter(order_filter=order_filter, item_id=item_id).first()
+        om.total_price += od.total_price
+        om.cash_amount = 0
+        om.phone_pe_amount = 0
+        om.pos_machine_amount = 0
+        om.save()
+        
+        
+        
+    return JsonResponse({'t': 't','amount':'amount'})
+
 def cut_item_to_cart(request):
     if request.method == 'GET':
         employee_id = request.GET['employee_id']
@@ -136,12 +209,16 @@ def add_item_to_hotel_cart(request):
         item_id = request.GET['item_id']
         price = request.GET['price']
         qty = request.GET['qty']
+        note = request.GET['note']
+        if note == '':
+            note = ' '
         total_amount = request.GET['total_amount']
         Hotel_cart(
             table_id=table_id,
             item_id = item_id,
             price=price,
             qty=qty,
+            note=note,
             total_amount=total_amount
         ).save()
         amount = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))

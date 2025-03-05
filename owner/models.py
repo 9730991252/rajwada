@@ -14,12 +14,14 @@ class Owner(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     status = models.IntegerField(default=1)
+    order_by = models.IntegerField(default=0,null=True)
     
 class Item(models.Model):
-    name = models.CharField(max_length=100)
+    marathi_name = models.CharField(max_length=100, default='')
+    english_name = models.CharField(max_length=100)
     price = models.FloatField(null=True)
     status = models.IntegerField(default=1)
-    gst_status = models.IntegerField(default=1)
+    discount_status = models.IntegerField(default=0)
 
     
 class Select_item_category(models.Model):
@@ -39,6 +41,7 @@ class Hotel_cart(models.Model):
     price = models.FloatField()
     total_amount = models.FloatField(default=0)
     qty = models.IntegerField()
+    note = models.CharField(null=True, max_length=100)
     cook_status = models.CharField(default='Pendding', max_length=100)
     date = models.DateTimeField(auto_now_add=True, null=True)
     
@@ -47,15 +50,15 @@ class Hotel_order_Master(models.Model):
     total_price=models.FloatField(default=0,null=True)
     ordered_date = models.DateTimeField(auto_now_add=True,null=True)
     order_filter=models.IntegerField(default=True)
-    s_gst = models.FloatField(default=0,null=True)
-    c_gst = models.FloatField(default=0,null=True)
+    date = models.DateField(auto_now=True,null=True)
     discount_percent = models.IntegerField(default=0)
     discount_amount = models.FloatField(default=0, null=True)
     cash_amount = models.FloatField(default=0, null=True)
     phone_pe_amount = models.FloatField(default=0, null=True)
     pos_machine_amount = models.FloatField(default=0, null=True) 
     paid_status = models.IntegerField(default=0)
-    
+    status = models.IntegerField(default=1)
+
 
     
 
@@ -65,6 +68,8 @@ class Hotel_order_Detail(models.Model):
     price=models.FloatField(default=0,null=True)
     total_price=models.FloatField(default=0,null=True)
     order_filter=models.IntegerField(default=True)
+    date = models.DateField(auto_now_add=True,null=True)
+    item_name = models.CharField(max_length=100, null=True)
     
 class Bill(models.Model):
     added_by = models.ForeignKey(Owner,on_delete=models.PROTECT,null=True)

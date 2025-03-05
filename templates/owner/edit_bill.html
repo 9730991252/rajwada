@@ -23,7 +23,7 @@
   </style>
 <div class="container border my-2">
     <div>
-    <h5>Table-{{table.table_number}}</h5>
+    <h5>Table-{{om.table.table_number}}</h5>
     </div>
 </div>
     <div class="container border">
@@ -35,20 +35,18 @@
           <th scope="col">Qty</th>
           <th scope="col">Price</th>
           <th scope="col">Total</th>
-          <th scope="col">Status</th>
         </tr>
       </thead>
       <tbody id="cart_item" >
 
-        {% for t in cart %}
+        {% for t in ord %}
         
         <tr>
          
-          <td>{{t.item.marathi_name}} {{t.note}}</td>
+          <td>{{t.item.name}}</td>
           <td>{{t.qty}}</td>
           <td>{{t.price}}</td>
-          <td>{{t.total_amount}}</td>
-          <td>{% if t.cook_status == 'Pendding' %}<h4 class="text-bg-danger text-center">Pending</h4>{% else %}<h4 class="text-bg-success text-center ">{{t.cook_status}}</h4>{% endif %}</td>
+          <td>{{t.total_price}}</td>
           <td><form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{t.id}}"><button type="submit" class="btn btn-transparent text-danger btn-sm" name="Delete">X</button></form></td>
         </tr>
         {% endfor %}
@@ -58,7 +56,12 @@
     Total Amount Rs.<input type="readonly" id="amount" value="{{amount}}" size=5 class="text-center tmc" disabled></input>
     <h5>Thank You Visit Again</h5>
     </div>
+    
+    
     </div>
+
+        <div class="container"><a href="/owner/complate_view_order/{{om.order_filter}}" class="btn btn-danger " >Complete Order</a></div>
+        
   
 
 
@@ -82,9 +85,9 @@
     .dish_main_box{
         padding: 10px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, 250px);
+        grid-template-columns: repeat(auto-fit, 300px);
         gap: 10px;
-        width: 100%;
+        width: 80%;
         margin: 20px auto;
         justify-content: center;
     }
@@ -113,7 +116,7 @@
 
 <div class="mt-4 mb-2">
   {% for c in category %}
-    <button class="btn btn-success category_btn mt-1" id="category_btn{{c.id}}" onclick="filterItems('{{ c.id }}')" >{{ c.name }}</button>
+    <button class="btn btn-success category_btn mt-1" onclick="filterItems('{{ c.id }}')" >{{ c.name }}</button>
   {% endfor %}
 </div>
 
@@ -124,19 +127,16 @@
   <input type="hidden" name="id" value="{{i.id}}">
   <input type="hidden" name="price" value="{{i.price}}">
   <div class="dish_box">
-      <div class="name"><b>{{i.marathi_name}}</b></div>
-      <div>
+      <div class="name" onclick="item_detail('{{i.id}}')"><b>{{i.name}}</b></div>
+      <div id="item_detail{{i.id}}" style="display: none;">
         <div class="row my-4 text-center">
-          <div class="col-4 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
-          <div class="col-4"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
-          <div class="col-4"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
+          <div class="col-2 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
+          <div class="col-3"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
+          <div class="col-2"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
+          <div class="col-5"><button type="button" class="btn btn-danger mx-auto" onclick="add_to_cart('{{i.id}}','{{i.price}}')">Confirm </button></div>
         </div>
-        <div class="row my-4 text-center" >
-          <div class="col-6"><input type="text" placeholder="Note" style="width: 100px;" name="" id="note{{i.id}}"></div>
-          <div class="col-6"><button type="button" class="btn btn-danger mx-auto" onclick="add_to_cart('{{i.id}}','{{i.price}}')">Confirm </button></div>
-        </div>
-        <div class="flex" style="margin-top: -20px;">
-            <div class=""  >Rs.<input style="border: none; width: 100px;" type="text" name="total_amount"  id="price{{i.id}}" value="{{i.price}}" readonly></div>
+        <div class="flex">
+            <div class="mt-2"  >Rs.<input style="border: none; width: 100px;" type="text" name="total_amount"  id="price{{i.id}}" value="{{i.price}}" readonly></div>
         </div>
       </div>
   </div>
@@ -159,32 +159,25 @@
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 5px;
-    display: grid;
-    grid-template-columns: 2.5fr 0.1fr 3fr;
+    padding: 10px;
+    display: flex;
+    .input{
+      width: 95%;
+    }
   }
 </style>
 
 
 <div class="footer">
-  <div><input type="text" oninput="search_hotel_item()" class="form-control" placeholder="Search Item" id="words"></div>
-  <div style="display: flex;justify-content: center;align-items: center;">Rs.<input type="readonly" style="width: 100px;" id="amount" value="{{amount}}" class="text-center" disabled></div>
-  <div style="text-align: end;">
-    <form method="POST" id="complete_order_btn" {% if cart %}{% else %} style="display: none;" {% endif %} > {% csrf_token %}
-      <div class="container"><button type="submit"  name="complete_order" class="btn btn-danger btn-sm " >Complete Order</button></div>
-    </form> 
+  <div class="input">
+    <div><input type="text" oninput="search_hotel_item()" class="form-control" placeholder="Search Item" id="words"></div>
   </div>
 </div>
 
 
 <script>
-  last_category_id = ''
 function  filterItems(category_id){
-  if (last_category_id){
-        document.getElementById('category_btn'+last_category_id).className = "btn btn-success category_btn mt-1"
-      }
-      document.getElementById('category_btn'+category_id).className = "btn btn-warning category_btn mt-1"
-      last_category_id = category_id
+
   $.ajax({
     url: "{% url 'filter_items_by_category' %}",
     method: "GET",
@@ -200,24 +193,21 @@ function  filterItems(category_id){
 
 function add_to_cart(id,price){
     var qty = document.getElementById('qty'+id).value
-    var note = document.getElementById('note'+id).value
     p=qty*price
 
     $.ajax({
-    url: "{% url 'add_item_to_hotel_cart' %}",
+    url: "{% url 'add_item_to_cart_edit' %}",
     method: "GET",
     data:{
         table_id:'{{table_id}}',
         item_id:id,
         price:price,
         qty:qty,
-        note:note,
-        total_amount:p
+        total_amount:p,
+        order_filter:'{{om.order_filter}}',
     },
     success: function(res){
-        document.getElementById('amount').value = res.amount
-        document.getElementById('complete_order_btn').style.display = 'unset'
-        document.getElementById('cart_item').innerHTML = res.t
+      location.reload()
 
     }
   })

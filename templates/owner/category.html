@@ -4,6 +4,7 @@
 {% block content %}
 <div>welcome - {{o.owner_name}}</div>
 {% include 'include/owner_menu.html' %}
+{% load home_tag %}
 <div class="container">
     <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -35,61 +36,108 @@
       </div>
     </div>
   </div>
-
-
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Action</th>
-        <th scope="col">Edit</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for c in category %}
-            <tr>
-                <th scope="row">{{forloop.counter}}</th>
-                <td>{{c.name}}</td>
-                <td><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{c.id}}"> {% if c.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></td>
-                <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{c.id}}">Edit</button></td>
-            </tr>
-
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal{{c.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Category</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST">{% csrf_token %}
-            <input type="hidden" name="id" value="{{c.id}}">
-            <div class="mb-3">
-                <label for="">Name</label>
-                <input type="text" name="name" value="{{c.name}}" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary" name="edit_category">Add</button>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+  <style>
+    .category_box{
+      border: 1px solid black;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 0 auto;
+      margin-bottom: 10px;
+      width: 350px;
+    }
+    .flex{
+      display: flex; 
+      gap: 10px;
+      justify-content: center;
+    }
+    .item_box{
+        padding: 10px;
+        border: 1px solid rgb(126, 126, 126);
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    </style>
+  <div class="text-center">
+    {% for c in category %}
+    <div class="category_box" data-aos="fade-right" data-aos-duration="2000" >
+      <div class="text-center" data-aos="fade-left" data-aos-duration="2000"><b>{{c.name}}</b></div>
+      <div class="flex" style="justify-content: space-evenly;">
+        <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{c.id}}"> {% if c.status == 1 %}<button class="btn btn-success btn-sm" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div>
+        <div><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal{{c.id}}">Edit</button></div>
+        <div><button data-bs-toggle="modal" data-bs-target="#item_modal{{c.id}}" data-aos="fade-left" data-aos-duration="2000" class="btn btn-info btn-sm">Item</button></div>
+      </div>
+      <div>
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{c.id}}">
+          <input style="width: 100px;margin-top: 10px;" name="order_by" type="number" value="{{c.order_by}}">
+          <button  type="submit" class="btn text-success btn-sm" name="save_order_by" ><i class="fa fa-check" aria-hidden="true"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="modal fade" id="item_modal{{c.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">{{c.name}}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="select_item_box{{c.id}}">
+            {% category_selected_item c.id as category_item %}
+            {% for i in category_item %}
+              <div id="item_box{{i.id}}" onclick="select_category_item('{{i.id}}','{{c.id}}')" class="item_box text-center" {% if i.selected_status == 1 %} style="background-color: rgb(191, 255, 200);"{% endif %} >{{i.name}}</div>
+            {% endfor %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-        {% endfor %}
-    </tbody>
-  </table>
-
-
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal{{c.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+  <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Category</h1>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+  <form method="POST">{% csrf_token %}
+    <input type="hidden" name="id" value="{{c.id}}">
+    <div class="mb-3">
+        <label for="">Name</label>
+        <input type="text" name="name" value="{{c.name}}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" name="edit_category">Add</button>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
 </div>
 
+{% endfor %}
+  </div>
+</div>
 
+<script>
+  function select_category_item(item_id,c_id){
+    $.ajax({
+    url: "{% url 'select_item_category' %}",
+    method: "GET",
+    data:{
+        c_id:c_id,
+        item_id:item_id,
+        },
+        success: function(data){
+          document.getElementById('select_item_box'+c_id).innerHTML = data.t
+        }
+  })
+}
+</script>
 {% endblock content %}

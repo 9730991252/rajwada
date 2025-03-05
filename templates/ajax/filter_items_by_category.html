@@ -3,13 +3,16 @@
 <input type="hidden" name="id" value="{{i.id}}">
 <input type="hidden" name="price" value="{{i.price}}">
 <div class="dish_box">
-    <div class="name" onclick="item_detail('{{i.id}}')"><b>{{i.name}}</b></div>
-    <div id="item_detail{{i.id}}" style="display: none;">
+    <div class="name" ><b>{{i.marathi_name}}</b></div>
+    <div id="item_detail{{i.id}}" >
       <div class="row my-4 text-center">
-        <div class="col-2 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
-        <div class="col-3"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
-        <div class="col-2"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
-        <div class="col-5"><button type="button" class="btn btn-danger mx-auto" onclick="add_to_cart('{{i.id}}','{{i.price}}')">Confirm </button></div>
+        <div class="col-4 "><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">-</button></div>
+        <div class="col-4"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
+        <div class="col-4"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="btn btn-success px-3">+</button></div>
+      </div>
+      <div class="row my-4 text-center">
+        <div class="col-6"><input type="text" placeholder="Note" style="width: 100px;" name="" id="note{{i.id}}"></div>
+        <div class="col-6"><button type="button" class="btn btn-danger mx-auto" onclick="add_to_cart('{{i.id}}','{{i.price}}')">Confirm </button></div>
       </div>
       <div class="flex">
           <div class="mt-2"  >Rs.<input style="border: none; width: 100px;" type="text" name="total_amount"  id="price{{i.id}}" value="{{i.price}}" readonly></div>

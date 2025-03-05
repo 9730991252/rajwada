@@ -14,22 +14,13 @@ def customer_scan(request, scan_url):
                 if participant.objects.filter(customer_id=customer.id, bill_id=bill.id).exists():
                     messages.warning(request,f"Participant already Added")   
                 else:
-                    participant(
-                        bill_id=bill.id,
-                        customer_id=customer.id,
-                    ).save()
+
+                    save_participant(customer.id,bill.id)
                     messages.success(request,f"participant Added Successfuly")   
             else:
-                Customer(
-                    name=name,
-                    mobile=mobile,
-                    address=address,
-                    ).save()
+                save_customer(name,mobile,address)
                 customer = Customer.objects.filter(mobile=mobile).first()
-                participant(
-                    bill_id=bill.id,
-                    customer_id=customer.id,
-                ).save()
+                save_participant(customer.id,bill.id)
                 messages.success(request,f"participant Added Successfuly")   
         participant_id = []
         for p in participant.objects.filter(bill_id=bill.id):
@@ -49,8 +40,18 @@ def customer_scan(request, scan_url):
     else:
         return redirect('index')
     
+def save_participant(customer_id,bill_id):
+    participant(
+        bill_id=bill_id,
+        customer_id=customer_id,
+    ).save()
     
-    
+def save_customer(name,mobile,address):
+    Customer(
+        name=name,
+        mobile=mobile,
+        address=address,
+    ).save()
     
     
     

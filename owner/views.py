@@ -8,8 +8,38 @@ from tea.models import *
 from django.db.models import Avg, Sum, Min, Max
 from django.views.decorators.csrf import csrf_exempt
 import math
-
+from datetime import date
 # Create your views here.
+def edit_bill(request,id):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()
+        om = Hotel_order_Master.objects.filter(id=id).first()
+        ord = Hotel_order_Detail.objects.filter(order_filter=om.order_filter)
+        amount = ord.aggregate(Sum('total_price'))['total_price__sum']
+        if 'Delete'in request.POST:
+            od_id = request.POST.get('cart_id')
+            od = Hotel_order_Detail.objects.filter(id=od_id).first()
+            om.total_price -= od.total_price
+            om.cash_amount = 0
+            om.phone_pe_amount = 0
+            om.pos_machine_amount = 0
+            om.save()
+            od.delete()
+            return redirect(f'/owner/edit_bill/{id}')
+        context={
+            'o':o,
+            'om':Hotel_order_Master.objects.filter(id=id).first(),
+            'ord':ord,
+            'amount':amount,
+            'category':Category.objects.filter(status=1),
+            'item':Item.objects.filter(status=1),
+
+        }
+        return render(request, 'owner/edit_bill.html', context)
+    else:
+        return redirect('/login/')
+    
 def owner_home(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
@@ -20,6 +50,52 @@ def owner_home(request):
         return render(request, 'owner/owner_home.html', context)
     else:
         return redirect('/login/')
+    
+@csrf_exempt
+def report(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        item = []
+        from_date = ''
+        to_date = ''
+        total_amount = 0
+        total_cash = 0
+        total_phone_pe = 0
+        total_pos_machine = 0
+        discount = 0
+        if 'search_report' in request.POST:
+            from_date = request.POST['from_date']
+            to_date = request.POST['to_date']
+            total_amount = 0
+            for i in Item.objects.filter():
+                qty = Hotel_order_Detail.objects.filter(item_id=i.id,date__range=[from_date, to_date] ).aggregate(Sum('qty'))['qty__sum']
+                total_price = Hotel_order_Detail.objects.filter(item_id=i.id, date__range=[from_date, to_date]).aggregate(Sum('total_price'))['total_price__sum']
+                
+                if total_price == None:
+                    total_price = 0
+                total_amount += total_price
+                if qty != None:
+                    item.append({'name':i.marathi_name, 'qty':qty, 'total_price':total_price})  
+                          
+            total_cash = Hotel_order_Master.objects.filter(date__range=[from_date, to_date]).aggregate(Sum('cash_amount'))['cash_amount__sum']
+            total_phone_pe = Hotel_order_Master.objects.filter(date__range=[from_date, to_date]).aggregate(Sum('phone_pe_amount'))['phone_pe_amount__sum']
+            total_pos_machine = Hotel_order_Master.objects.filter(date__range=[from_date, to_date]).aggregate(Sum('pos_machine_amount'))['pos_machine_amount__sum']
+            discount = Hotel_order_Master.objects.filter(date__range=[from_date, to_date]).aggregate(Sum('discount_amount'))['discount_amount__sum']
+
+        context={
+            'item':item,
+            'from_date':from_date,
+            'to_date':to_date,
+            'total_amount':total_amount,
+            'total_cash':total_cash,                
+            'total_phone_pe':total_phone_pe,                
+            'total_pos_machine':total_pos_machine,
+            'discount':discount,
+        }
+        return render(request, 'owner/report.html', context)
+    
+    else:
+        return redirect('login')
     
 def tea_employee(request):
     if request.session.has_key('owner_mobile'):
@@ -83,6 +159,13 @@ def running_table(request):
             b = Hotel_order_Master.objects.filter(id=bill_id).first()
             b.paid_status = 1
             b.save()
+        if 'chang_table'in request.POST:
+            old = request.POST.get('old_table')
+            new = request.POST.get('new_table')
+            h = Hotel_cart.objects.filter(table_id=old).first()
+            h.table_id = new
+            h.save()
+            return redirect('running_table')
         context={
             'o':o,
             'table':table,
@@ -93,13 +176,13 @@ def running_table(request):
     else:
         return redirect('/login/')
     
+@csrf_exempt
 def table(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
         o = Owner.objects.filter(mobile=mobile, status=1).first()
         if 'add_table'in request.POST:
-            table_number = Table.objects.all().count()
-            table_number += 1
+            table_number = request.POST.get('name')
             Table(
                 table_number=table_number
             ).save()
@@ -119,7 +202,9 @@ def table(request):
         
         context={
             'o':o,
-            'table':Table.objects.all()
+            'table':Table.objects.all(),
+            'next_table_count':Table.objects.all().count()+1
+            
         }
         return render(request, 'owner/table.html', context)
     else:
@@ -145,29 +230,36 @@ def category(request):
             Category(
                 name=name
             ).save()
-            return redirect('category')
+            return redirect('/owner/category/')
         if 'edit_category'in request.POST:
             id = request.POST.get('id')
             name = request.POST.get('name')
             c = Category.objects.filter(id=id).first()
             c.name = name
             c.save()
-            return redirect('category')
+            return redirect('/owner/category/')
         if 'active'in request.POST:
             id = request.POST.get('id')
             c = Category.objects.filter(id=id).first()
             c.status = 0
             c.save()
-            return redirect('category')
+            return redirect('/owner/category/')
         if 'deactive'in request.POST:
             id = request.POST.get('id')
             c = Category.objects.filter(id=id).first()
             c.status = 1
             c.save()
-            return redirect('category')
+            return redirect('/owner/category/')
+        if 'save_order_by'in request.POST:
+            c_id = request.POST.get('id')
+            order_by = request.POST.get('order_by')
+            c = Category.objects.filter(id=c_id).first()
+            c.order_by = order_by
+            c.save()
+            return redirect('/owner/category/')
         context={
             'o':o,
-            'category':Category.objects.all()
+            'category':Category.objects.all().order_by('-order_by')
         }
         return render(request, 'owner/category.html', context)
     else:
@@ -176,14 +268,14 @@ def category(request):
 def item(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
-        o = Owner.objects.filter(mobile=mobile, status=1).first()        
-        if 'add_item'in request.POST:
-            name = request.POST.get('name')
-            category_id = request.POST.get('category_id')
+        o = Owner.objects.filter(mobile=mobile, status=1).first()      
+        if 'add_item'in request.POST:  
+            marathi_name = request.POST.get('marathi_name')
+            english_name = request.POST.get('english_name')
             price = request.POST.get('price')
             Item(
-                name=name,
-                category_id=category_id,
+                marathi_name=marathi_name,
+                english_name=english_name,
                 price=price
             ).save()
             return redirect('item')
@@ -383,17 +475,32 @@ def generate_url():
     url = f'{random.choice(string.ascii_letters)}{random.choice(string.ascii_letters)}{count}{random.choice(string.ascii_letters)}{random.choice(string.ascii_letters)}'
     return url
 
+@csrf_exempt
 def item_detail(request, id):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
         o = Owner.objects.filter(mobile=mobile, status=1).first()        
         if o:
             item = Item.objects.filter(id=id).first()
-            if 'edit_item_name'in request.POST:
-                name = request.POST.get('name')
-                item.name = name
+            if 'discount_active' in request.POST:
+                item.discount_status = 0
                 item.save()
-                return redirect(f'/owner/item_detail/{id}')
+                print('hi')
+                return redirect('item_detail', id=id)
+            if 'discount_deactive'in request.POST:
+                item.discount_status = 1
+                item.save()
+                return redirect('item_detail', id=id)
+            if 'edit_item_marathi_name' in request.POST:
+                name = request.POST.get('marathi_name')
+                item.marathi_name = name
+                item.save()
+                return redirect('item_detail', id=id)
+            if 'edit_item_english_name' in request.POST:
+                name = request.POST.get('english_name')
+                item.english_name = name
+                item.save()
+                return redirect('item_detail', id=id)
             if 'edit_price_name'in request.POST:
                 price = request.POST.get('price')
                 item.price = price
@@ -424,22 +531,10 @@ def item_detail(request, id):
             c.status = 0
             c.save()
             return redirect(f'/owner/item_detail/{id}')
-        if 'gst_active'in request.POST:
-            id = request.POST.get('id')
-            c = Item.objects.filter(id=id).first()
-            c.gst_status = 0
-            c.save()
-            return redirect(f'/owner/item_detail/{id}')
         if 'deactive'in request.POST:
             id = request.POST.get('id')
             c = Item.objects.filter(id=id).first()
             c.status = 1
-            c.save()
-            return redirect(f'/owner/item_detail/{id}')
-        if 'gst_deactive'in request.POST:
-            id = request.POST.get('id')
-            c = Item.objects.filter(id=id).first()
-            c.gst_status = 1
             c.save()
             return redirect(f'/owner/item_detail/{id}')
         context={
@@ -469,35 +564,8 @@ def view_order(request,table_id):
                 return redirect(f'/owner/view_order/{table_id}')
             if 'complete_order'in request.POST:
                 order_filter = (int(Hotel_order_Master.objects.all().count()) + 1)
-                t =Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
-                if t != None:
-                    ta = Hotel_cart.objects.filter(table_id=table_id, item__gst_status=0).aggregate(Sum('total_amount'))['total_amount__sum']
-                    if ta != None:
-                        t -= ta
-                    
-                gst = (t / 100) * 5
-                s_gst = (gst / 2)
-                c_gst = (gst / 2)
-                total_price = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
-                total_amount = math.floor(int(total_price) + int(gst))
-                Hotel_order_Master(
-                    table_id=table_id,
-                    total_price=total_price,
-                    order_filter=order_filter,
-                    s_gst=s_gst,
-                    c_gst=c_gst,
-                    cash_amount=total_amount
-                ).save()
-                for i in Item.objects.filter(status=1):
-                    if Hotel_cart.objects.filter(table_id=table_id, item_id=i.id):
-                        Hotel_order_Detail(
-                           item_id=i.id,
-                           qty=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('qty'))['qty__sum'],
-                           price=i.price,
-                           total_price=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('total_amount'))['total_amount__sum'],
-                           order_filter=order_filter
-                        ).save()
-                Hotel_cart.objects.filter(table_id=table_id).delete()
+                
+                comolete_order(order_filter, table_id)
                 return redirect(f'/owner/complate_view_order/{order_filter}')
         context={
             'o':o,
@@ -512,16 +580,63 @@ def view_order(request,table_id):
         return render(request, 'owner/view_order.html', context)
     else:
         return redirect('/login/')
+    
+def comolete_order(order_filter, table_id):
+    t =Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
+    if t != None:
+        ta = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
+        if ta != None:
+            t -= ta
+        
+    total_price = Hotel_cart.objects.filter(table_id=table_id).aggregate(Sum('total_amount'))['total_amount__sum']
+    total_amount = math.floor(int(total_price))
+    Hotel_order_Master(
+        table_id=table_id,
+        total_price=total_price,
+        order_filter=order_filter,
+        cash_amount=total_amount,        
+    ).save()
+    for i in Item.objects.filter(status=1):
+        if Hotel_cart.objects.filter(table_id=table_id, item_id=i.id):
+            Hotel_order_Detail(
+               item_id=i.id,
+               qty=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('qty'))['qty__sum'],
+               price=i.price,
+               total_price=Hotel_cart.objects.filter(table_id=table_id, item_id=i.id).aggregate(Sum('total_amount'))['total_amount__sum'],
+               order_filter=order_filter,
+                item_name=i.marathi_name,
+            ).save()
+    Hotel_cart.objects.filter(table_id=table_id).delete()
                            
 def complate_order(request):
     if request.session.has_key('owner_mobile'):
         mobile = request.session['owner_mobile']
         o = Owner.objects.filter(mobile=mobile, status=1).first()        
         if o:
-            pass
+            if 'cancel_bill'in request.POST:
+                order_filter = request.POST.get('order_filter')
+                om = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
+                om.status = 0
+                om.save()
+                return redirect('complate_order')
+            order_master = []
+            for b in Hotel_order_Master.objects.filter().order_by('-id'):
+                cancel_btn_show_status = 0
+                order_details = Hotel_order_Detail.objects.filter(order_filter=b.order_filter).first()
+                if order_details:
+                    if order_details.date == date.today():
+                        cancel_btn_show_status = 1
+                order_master.append({
+                    'id': b.id,
+                    'order_filter': b.order_filter,
+                    'total_price': b.total_price,
+                    'ordered_date': b.ordered_date,
+                    'status':b.status,
+                    'cancel_btn_show_status':cancel_btn_show_status
+                })
         context={
             'o':o,
-            'order_master':Hotel_order_Master.objects.all()
+            'order_master':order_master
         }
         return render(request, 'owner/complate_order.html', context)
     else:
@@ -546,7 +661,7 @@ def complate_view_order(request,order_filter):
                     scan_url=generate_url(),
                     ).save()
                 return redirect(f'/owner/complate_view_order/{order_filter}')
-            total_amount = math.floor(int(order_master.total_price) + order_master.s_gst + order_master.c_gst - int(order_master.discount_amount))
+            total_amount = math.floor(int(order_master.total_price) - int(order_master.discount_amount))
             if 'add_phone_pe_amount'in request.POST:
                 phone_pe_amount = request.POST.get('phonepe_amount')
                 order_master.phone_pe_amount = phone_pe_amount
@@ -584,7 +699,7 @@ def complate_view_order(request,order_filter):
                 order_master = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
                 order_master.save()
                 return redirect(f'/owner/complate_view_order/{order_filter}')
-            without_gst_amount = Hotel_order_Detail.objects.filter(order_filter=order_filter, item__gst_status=0).aggregate(Sum('total_price'))['total_price__sum']
+            discount_amount = Hotel_order_Detail.objects.filter(order_filter=order_filter, item__discount_status=1).aggregate(Sum('total_price'))['total_price__sum']
             if 'chang_paid_status'in request.POST:
                 order_master.paid_status = 1
                 order_master.save()
@@ -596,7 +711,8 @@ def complate_view_order(request,order_filter):
             'order_detail':Hotel_order_Detail.objects.filter(order_filter=order_filter),
             'bill_status':bill_status,
             'total_amount':total_amount,
-            'without_gst_amount':without_gst_amount
+            'bill':Bill.objects.filter(order_master__order_filter=order_filter).first(),
+            'discount_amount':discount_amount
         }
         return render(request, 'owner/complate_view_order.html', context)
     else:

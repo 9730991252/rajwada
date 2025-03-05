@@ -19,25 +19,22 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form method="POST">{% csrf_token %}
+              <form method="POST">
+                {% csrf_token %}
                 <div class="mb-3">
-                    <label for="">Name</label>
-                    <input type="text" name="name" class="form-control" required>
+                  <label for="english_name">English Name</label>
+                  <input type="text" id="english_name" name="english_name" placeholder="item english Name" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                  <select class="form-select" name="category_id" aria-label="Default select example">
-                    <option selected>Category</option>
-                    {% for c in category %}
-                    <option value="{{c.id}}">{{c.name}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
+                    <label for="marathi_name">Marathi Name</label>
+                    <input type="text" id="marathi_name" name="marathi_name" placeholder="item Marathi Name" class="form-control" required>
+                  </div>
                 <div class="mb-3">
-                    <label for="">price</label>
-                    <input type="text" name="price" class="form-control" required>
+                  <label for="price">Price</label>
+                  <input type="number" id="price" name="price" placeholder="item Price" class="form-control" required>
                 </div>
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary" name="add_item">Add</button>
+                <div class="mb-2 mt-1">
+                  <button type="submit" name="add_item" class="btn btn-primary">Add</button>
                 </div>
               </form>
             </div>
@@ -71,7 +68,7 @@
     <div class="item_main_box">
         {% for i in item %}
         <div class="item_box">
-            <div class="name">{{i.name}}</div>
+            <div class="name">{{i.marathi_name}}</div>
             <div class="" style="display: flex;justify-content: space-evenly;">
                 <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{i.id}}"> {% if i.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div>
                 <a href="/owner/item_detail/{{i.id}}" class="btn btn-info">View</a>

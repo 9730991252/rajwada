@@ -4,12 +4,12 @@
 {% block content %}
 <div>welcome - {{o.owner_name}}</div>
 {% include 'include/owner_menu.html' %}
-
-
-<div class="container py-5">
-  <div class="row">
-<div class="col-6 text-center"><a href="/owner/running_table/"   class="btn btn-success" >चालू टेबल / नवीन टेबल / पेड-अनपेड बिल </a></div>
-<div class="col-6 text-center"><a href="/owner/complate_order/"   class="btn btn-danger" >पूर्ण झालेले बिल </a></div>
-</div>
-</div>
+{% load home_tag %}
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-6 text-center"><a href="/owner/running_table/"   class="btn btn-success" >चालू टेबल / नवीन टेबल / पेड-अनपेड बिल </a></div>
+      <div class="col-6 text-center"><a href="/owner/complate_order/"   class="btn btn-danger" >पूर्ण झालेले बिल </a></div>
+    </div>
+    {% todays_sell %}
+  </div>
 {% endblock content %}

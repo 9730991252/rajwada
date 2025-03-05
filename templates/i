@@ -4,120 +4,91 @@
 {% block content %}
 <div>welcome - {{o.owner_name}}</div>
 {% include 'include/owner_menu.html' %}
-<div class="container">
-    <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Add  Item
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST">{% csrf_token %}
-            <div class="mb-3">
-                <label for="">Name</label>
-                <input type="text" name="name" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" name="category_id" aria-label="Default select example">
-                <option selected>Category</option>
-                {% for c in category %}
-                <option value="{{c.id}}">{{c.name}}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="mb-3">
-                <label for="">price</label>
-                <input type="text" name="price" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary" name="add_item">Add</button>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 
 
+<style>
+    *{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  height: 100%;
+  width: 100%;
+}
+
+.Pagination{
+  margin-bottom: 50px;
+}
+
+</style>
+<diV class="container mt-5 p-5 border rounded">
+  <a href="/running_table"   class="btn btn-success px-5 btn-sm" >Running Table</a>
+
+</diV>
+
+<div class="container border">
+  <h3>Your Complate Order </h3>
   <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Caregory</th>
-        <th scope="col">Price</th>
-        <th scope="col">Action</th>
-        <th scope="col">Edit</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for i in item %}
-            <tr>
-                <th scope="row">{{forloop.counter}}</th>
-                <td>{{i.name}}</td>
-                <td>{{i.category.name}}</td>
-                <td>{{i.price}}</td>
-                <td><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{i.id}}"> {% if i.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></td>
-                <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{i.id}}">Edit</button></td>
-            </tr>
+      <thead>
+        <tr>
+          <th scope="col">Bill Number</th>
+          <th scope="col">Table Number</th>
+          <th scope="col">Date</th>
+          <th scope="col">Total Amount</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for m in order_master %}
+        <tr>
+          <td>{{m.order_filter}}</td>
+          <td>{{m.table.table_number}}</td>
+          <td>{{m.ordered_date}}</td>
+          <td>{{m.total_price}}</td>
+          <td><a href="/owner/complate_view_order/{{m.order_filter}}"  class="btn btn-primary">View</a></td>
+        </tr>
+           {% endfor %}
 
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Item</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST">{% csrf_token %}
-            <input type="hidden" name="id" value="{{i.id}}">
-            <div class="mb-3">
-                <label for="">Name</label>
-                <input type="text" name="name" value="{{i.name}}" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <select class="form-select" name="category_id" aria-label="Default select example">
-                <option selected value="{{i.category_id}}">{{i.category.name}}</option>
-                {% for c in category %}
-                <option value="{{c.id}}">{{c.name}}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="mb-3">
-                <label for="">price</label>
-                <input type="text" name="price" value="{{i.price}}" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary" name="edit_item">Add</button>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
+      </tbody>
+    </table>
+
+                <!-- Pagination -->
+ 
+  <div class="container Pagination">
+    <div class="mx-5">
+    <nav aria-label="...">
+      <ul class="pagination">
+        {% if m.has_previous %}
+        <li class="page-item ">
+          <a class="page-link" href="/complate_order/?page={{m.previous_page_number}}">Previous</a>
+        </li>
+        <li class="page-item ">
+       <a class="page-link" href="/complate_order/?page=1" >First</a>
+      </li>
+        {% endif %}
+  
+        <li class="page-item " aria-current="page">
+          <a class="page-link" href="/complate_order/?page=2">2</a>
+        </li>
+        <li class="page-item"><a class="page-link" href="/complate_order/?page=3">3</a></li>
+        {% if m.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="/complate_order/?page={{m.next_page_number}}">Next</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
   </div>
-
-        {% endfor %}
-    </tbody>
-  </table>
-
+  </div>
+  <!-- Pagination -->
 
 
 </div>
+
+
 
 
 {% endblock content %}

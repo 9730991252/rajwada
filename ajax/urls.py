@@ -11,5 +11,11 @@ urlpatterns = [
     path('filter_items_by_category', views.filter_items_by_category, name='filter_items_by_category'),
     path('select_category_item', views.select_category_item, name='select_category_item'),
     path('search_tea_item_by_category', views.search_tea_item_by_category, name='search_tea_item_by_category'),
-    path('select_discount_percent', views.select_discount_percent, name='select_discount_percent')
+    path('select_discount_percent', views.select_discount_percent, name='select_discount_percent'),
+    path('select_item_category/', views.select_item_category, name='select_item_category'),
+    path('chang_teble_status/', views.chang_teble_status, name='chang_teble_status'),
+    path('chang_teble_name/', views.chang_teble_name, name='chang_teble_name'),
+    path('add_item_to_cart_edit/', views.add_item_to_cart_edit, name='add_item_to_cart_edit'),
+
+    
     ]
