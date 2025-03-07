@@ -8,7 +8,8 @@ from tea.models import *
 from django.db.models import Avg, Sum, Min, Max
 from django.views.decorators.csrf import csrf_exempt
 import math
-from datetime import date
+from datetime import datetime, date, time
+from django.core.paginator import Paginator
 # Create your views here.
 def edit_bill(request,id):
     if request.session.has_key('owner_mobile'):
@@ -634,9 +635,12 @@ def complate_order(request):
                     'status':b.status,
                     'cancel_btn_show_status':cancel_btn_show_status
                 })
+            paginator = Paginator(order_master, per_page=100)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
         context={
             'o':o,
-            'order_master':order_master
+            'order_master':page_obj
         }
         return render(request, 'owner/complate_order.html', context)
     else:

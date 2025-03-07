@@ -10,6 +10,12 @@ from chef.models import *
 from datetime import datetime, date, time
 
 register = template.Library()
+
+@register.simple_tag()
+def customer_selected_item_count(category_id):
+    return Select_item_category.objects.filter(category_id=category_id,status = 1).count()
+
+
 @register.simple_tag()
 def cart_item_detail(item_id, employee_id):
     cart = Cart.objects.filter(item_id=item_id,employee_id=employee_id).first()

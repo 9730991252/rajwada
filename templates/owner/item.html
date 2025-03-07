@@ -68,14 +68,22 @@
     <div class="item_main_box">
         {% for i in item %}
         <div class="item_box">
-            <div class="name">{{i.marathi_name}}</div>
+            <div class="name">{{i.marathi_name}} <h style="font-weight: 400;">Rs.{{i.price}}</h></div>
+            <div class="" style="font-weight: 400;">{{i.english_name}}</div>
             <div class="" style="display: flex;justify-content: space-evenly;">
                 <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{i.id}}"> {% if i.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div>
                 <a href="/owner/item_detail/{{i.id}}" class="btn btn-info">View</a>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
+                <div style="display: flex;font-weight: 400;">
+                  {% if i.discount_status == 1 %}
+                  <p class="text-success">Discount Status ON</p>
+                  {% else %}
+                  <p class="text-danger">Discount Status OFF</p>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+              </div>
 
 </div>
 {% endblock content %}
