@@ -92,13 +92,11 @@ def search_tea_item(request):
 
 def search_hotel_item(request):
     if request.method == 'GET':
-        table_id = request.GET['table_id']
         words = request.GET['words']
         context={
-                'table_id':table_id,
-                'item':Item.objects.filter(name__icontains=words)[:3],
+                'item':Item.objects.filter(english_name__icontains=words)[:10],
         }
-        t = render_to_string('ajax/search_hotel_item.html', context) 
+        t = render_to_string('ajax/filter_items_by_category.html', context) 
     return JsonResponse({'t': t})
 import math
 def select_discount_percent(request):
@@ -161,8 +159,10 @@ def add_item_to_cart_edit(request):
         qty = request.GET['qty']
         total_amount = request.GET['total_amount']
         order_filter = request.GET['order_filter']
+        it = Item.objects.filter(id=item_id).first()
         Hotel_order_Detail(
             item_id=item_id,
+            item_name=it.marathi_name,
             qty=qty,
             price=price,
             total_price=total_amount,
@@ -171,9 +171,11 @@ def add_item_to_cart_edit(request):
         om = Hotel_order_Master.objects.filter(order_filter=order_filter).first()
         od = Hotel_order_Detail.objects.filter(order_filter=order_filter, item_id=item_id).first()
         om.total_price += od.total_price
-        om.cash_amount = 0
+        om.cash_amount += od.total_price
         om.phone_pe_amount = 0
         om.pos_machine_amount = 0
+        om.discount_percent = 0
+        om.discount_amount = 0
         om.save()
         
         

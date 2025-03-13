@@ -169,8 +169,6 @@
             </div>
             <h6>Sub Total Amount Rs.{{order_master.total_price}}</h6>
         
-            <h6 {% if order_master.s_gst == 0 %} class="hide"{% endif %}>S Gst Rs.{{order_master.s_gst}}</h6>
-            <h6 {% if order_master.c_gst == 0 %} class="hide"{% endif %}>C Gst Rs.{{order_master.c_gst}}</h6>
             <h6 {% if order_master.discount_amount == 0 %} class="hide"{% endif %}>Discount Amount Rs.{{order_master.discount_amount}}</h6>
         
             <b>Total Amount Rs.<b>{{total_amount}}</b></b>

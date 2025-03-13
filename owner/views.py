@@ -22,7 +22,7 @@ def edit_bill(request,id):
             od_id = request.POST.get('cart_id')
             od = Hotel_order_Detail.objects.filter(id=od_id).first()
             om.total_price -= od.total_price
-            om.cash_amount = 0
+            om.cash_amount -= od.total_price
             om.phone_pe_amount = 0
             om.pos_machine_amount = 0
             om.save()

@@ -16,6 +16,5 @@ urlpatterns = [
     path('chang_teble_status/', views.chang_teble_status, name='chang_teble_status'),
     path('chang_teble_name/', views.chang_teble_name, name='chang_teble_name'),
     path('add_item_to_cart_edit/', views.add_item_to_cart_edit, name='add_item_to_cart_edit'),
-
     
     ]
