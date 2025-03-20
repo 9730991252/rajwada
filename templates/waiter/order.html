@@ -4,55 +4,72 @@
 {% block content %}
 <div>welcome - {{w.name}}</div>
 {% include 'include/waiter_menu.html' %}
+{% include 'include/alert.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/tost.css' %}">
 
-<div class="container border my-2">
+
+
+<div class="container my-2">
     <div>
-    <h5>Table-{{table.table_number}}</h5>
+        <h5>{{table.table_number}}</h5>
     </div>
-    <hr>
-    <div id="cart">
-
-        <table class="table">
-      
-          <tbody>{% for cart in cart %}
-            <tr>
-              <td>{{cart.item.name}}</td>
-              <td>{{cart.qty}}</td>
-              <td>{{cart.note}}</td>
-              <td>{% if cart.cook_status == 'Pendding' %}<h4 class="text-bg-danger text-center">Pending</h4>{% else %}<h4 class="text-bg-success text-center ">{{cart.cook_status}}</h4>{% endif %}</td>
-              <td>{% if cart.cook_status == 'Pendding' %}<form action="" method="POST">{% csrf_token %}<input type="hidden" name="cart_id" value="{{cart.id}}"><button type="submit" class="btn btn-danger" name="Delete">X</button></form>{% else %}{% endif %}</td>
-            </tr>
-      
-          </tbody>
-          {% endfor %}
-        </table>
-      
-      
-      </div>
-    <hr>
+<hr>
 
 
-<br><br>
-    <style>
-    .dish_main_box{
-        padding: 10px;
+<table class="table">
+
+    <tbody id="cart">
+      {% for cart in cart %}
+        <tr>
+            <td>{{cart.item.marathi_name}}</td>
+            <td>{{cart.qty}}</td>
+            <td>{{cart.note}}</td>
+            <td style="width: 150px;">{% if cart.cook_status == 'Pendding' %}<h4 class="text-bg-danger text-center">Pending</h4>{% else %}<h4 class="text-bg-success text-center ">{{cart.cook_status}}</h4>{% endif %}</td>
+            <td></td>
+            <td>{% if cart.cook_status == 'Pendding' %}<form action="" method="POST"><input type="hidden" name="cart_id" value="{{cart.id}}"><button type="submit" class="btn btn-danger btn-sm" name="Delete">X</button></form>{% else %}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</div>
+
+<style>
+    .body{
         display: grid;
-        grid-template-columns: repeat(auto-fit, 300px);
-        gap: 10px;
-        width: 80%;
-        margin: auto;
-        justify-content: center;
+        grid-template-columns: 0.1fr 1fr;
     }
-    .dish_box{
-        border: 1px solid black;
-        padding: 10px;
-        border-radius: 10px;
-        text-align: center;
-        width: 300px;
-    }
-    .name{
-        font-weight: 700px;
-    }
+</style>
+<div class="body" id="body">
+    <div class="flex" style="justify-content: start;flex-direction: column;">
+        {% for c in category %}
+          <button class="btn btn-primary" id="category_btn{{c.id}}" onclick="filterItems('{{ c.id }}')" >{{ c.name }}</button>
+        {% endfor %}
+    </div>
+
+    <div>
+    <style>
+        .dish_main_box{
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 200px);
+            gap: 20px;
+            width: 80%;
+            margin: auto;
+            justify-content: center;
+        }
+        .dish_box{
+          box-shadow: 2px 1px 10px 1px rgba(0,0,0,0.75);
+          padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+        }
+        .name{
+            font-weight: 700px;
+        }
         .flex{
             display: flex;
             gap: 10px;
@@ -61,70 +78,126 @@
         .total_price{
             display: none;
         }
-    </style>
+        .pluse_minus_btn{
+          font-weight: 700;
+          font-size: 17px;
+        }
+        </style>
 
-<div class="flex" style="justify-content: start;">
-  {% for c in category %}
-    <button class="btn btn-primary" onclick="filterItems('{{ c.id }}')" >{{ c.name }}</button>
-  {% endfor %}
-</div>
+
 <br>
 
-<hr>
 
+<div class="dish_main_box" id="item_ruselt">
+  {% for i in item %}
 
-<div class="dish_main_box" id="item_ruselt"></div>
+<input type="hidden" name="id" value="{{i.id}}">
+<input type="hidden" name="price" value="{{i.price}}">
+<div class="dish_box">
+    <div class="name"><b>{{i.marathi_name}}</b></div>
+    <div>
+        <div><input type="text" name="" style="width: 180px; text-align: center; border: none;" placeholder="Note" id="note{{i.id}}"></div>
+      <div class="row my-1 text-center">
+        <div class="col-3"><button type="button" onclick="minus('{{i.id}}','{{i.price}}')" class="pluse_minus_btn text-danger btn-sm px-3">-</button></div>
+        <div class="col-5"><input type="text" name="qty" style="width: 50px; text-align: center;" id="qty{{i.id}}" value="1" ></div>
+        <div class="col-3"><button type="button" onclick="plus('{{i.id}}','{{i.price}}')" class="pluse_minus_btn text-success btn-sm px-3">+</button></div>
+    </div>
+    <div class="flex">
+        <div class="mt-2"  >Rs.<input style="border: none; width: 70px;" type="text" name="total_amount"  id="price{{i.id}}" value="{{i.price}}" ></div>
+        
+      </div>
+      <div style="width: 100%;"><button type="button" class="form-control btn btn-danger btn-sm mt-2 mx-auto" onclick="add_to_cart('{{i.id}}', '{{i.price}}', '{{i.english_name}}')">Confirm </button></div>
+    </div>
+  </div>
+  
+  {% endfor %}
+</div>
 
 
 </div>
 
+
+</div>
+
+
+<br><br><br><br><br>
 <style>
-  .footer{
-    background-color: antiquewhite;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 10px;
-    display: flex;
-    .input{
-      width: 95%;
-    }
+    .footer{
+        background-color: antiquewhite;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 10px;
+        display: flex;
+        .input{
+            width: 95%;
+        }
   }
-</style>
+  </style>
+<div id="tostBox">
+</div>
+
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
 
 <div class="footer">
   <div class="input"><input type="text" placeholder="Search Iteams..." class="form-control" id="words" oninput="search_hotel_item()" required></div>
 </div>
+
+<script src="{% static 'js/toast.js' %}"></script>
 <script>
 
-function add_to_cart(id,price){
-    var qty = document.getElementById('qty'+id).value
-    p=qty*price
+    function add_to_cart(id,price, name){
+        var qty = document.getElementById('qty'+id).value
+        var note = document.getElementById('note'+id).value
+        p=qty*price
+        $.ajax({
+            url: "{% url 'add_item_to_hotel_cart' %}",
+            method: "GET",
+            data:{
+                table_id:'{{table_id}}',
+                item_id:id,
+                price:price,
+                qty:qty,
+                total_amount:p,
+                note:note,
+                waiter_id : '{{w.id}}',
+                hotel_id :'{{w.hotel_id}}'
+            },
+            success: function(res){
+              document.getElementById('cart').innerHTML = res.t
+              const msg = new SpeechSynthesisUtterance;
+              
+              msg.text=`${name} ${qty} Qty`;
 
-    $.ajax({
-    url: "{% url 'add_item_to_hotel_cart' %}",
-    method: "GET",
-    data:{
-        table_id:'{{table_id}}',
-        item_id:id,
-        price:price,
-        qty:qty,
-        total_amount:p
-    },
-    success: function(res){
-        location.reload()
+              msg.voice=speechSynthesis.getVoices()[1];
+              speechSynthesis.speak(msg);
+
+              message = `${name} ${qty}qty Added to cart`
+
+              show_tost('Successfully submited', 'success')
+
+
+            }
+        })
     }
-  })
-}
-function  filterItems(category_id){
-
-$.ajax({
-  url: "{% url 'filter_items_by_category' %}",
-  method: "GET",
-  data: {
-    category_id: category_id,
-  },
+    last_category_id = ''
+    function  filterItems(category_id){
+      if (last_category_id){
+        document.getElementById('category_btn'+last_category_id).className = "btn btn-primary"
+      }
+      document.getElementById('category_btn'+category_id).className = "btn btn-warning"
+      last_category_id = category_id
+        $.ajax({
+            url: "{% url 'filter_items_by_category' %}",
+            method: "GET",
+            data: {
+                category_id: category_id,
+            },
   success: function(res) {
     document.getElementById('item_ruselt').innerHTML = res.t;
   }
@@ -165,36 +238,36 @@ function plus(id,price){
   p=qty*price
   document.getElementById('price'+id).value=p;
     //speak code
-    
+
   const msg = new SpeechSynthesisUtterance;
   msg.text=qty;
-  
+
   msg.voice=speechSynthesis.getVoices()[1];
   speechSynthesis.speak(msg);
 
 
 //ajax
- 
+
 
 
   }
 }
-    
+
   // minus btn code
 
     function minus(id,price){
   var qty = document.getElementById('qty'+id).value
-  if(qty > 0){
+  if(qty > 1){
   qty--;
   document.getElementById('qty'+id).value=qty;
   p=qty*price
   document.getElementById('price'+id).value=p;
 
         //speak code
-    
+
         const msg = new SpeechSynthesisUtterance;
   msg.text=qty;
-  
+
   msg.voice=speechSynthesis.getVoices()[1];
   speechSynthesis.speak(msg);
   }
@@ -203,6 +276,21 @@ function plus(id,price){
 
   }
     }
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span>${message}</span>
+    <div class="progress-bar"></div>
+  `;
+
+  document.getElementById('toast-container').appendChild(toast);
+
+  // setTimeout(() => {
+  //   toast.remove();
+  // }, 3500);
+}
 
 </script>
 

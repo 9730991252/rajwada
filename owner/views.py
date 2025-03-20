@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 import math
 from datetime import datetime, date, time
 from django.core.paginator import Paginator
+from django.contrib import messages 
+
 # Create your views here.
 def edit_bill(request,id):
     if request.session.has_key('owner_mobile'):
@@ -562,6 +564,7 @@ def view_order(request,table_id):
             if 'Delete'in request.POST:
                 cart_id = request.POST.get('cart_id')
                 Hotel_cart.objects.filter(id=cart_id).delete()
+                messages.warning(request,f"Removed SuccessFully.")
                 return redirect(f'/owner/view_order/{table_id}')
             if 'complete_order'in request.POST:
                 order_filter = (int(Hotel_order_Master.objects.all().count()) + 1)

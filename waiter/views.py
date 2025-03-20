@@ -1,6 +1,10 @@
 from django.shortcuts import redirect, render
 from .models import *
 from owner.models import *
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages 
+
+
 # Create your views here.
 def waiter_home(request):
     if request.session.has_key('waiter_mobile'):
@@ -24,6 +28,7 @@ def waiter_home(request):
     else:
         return redirect('/login/')
     
+@csrf_exempt
 def order(request, table_id):
     if request.session.has_key('waiter_mobile'):
         mobile = request.session['waiter_mobile']
@@ -31,6 +36,7 @@ def order(request, table_id):
         if 'Delete'in request.POST:
             cart_id = request.POST.get('cart_id')
             Hotel_cart.objects.filter(id=cart_id).delete()
+            messages.warning(request,f"Removed SuccessFully.")
             return redirect(f'/waiter/order/{table_id}') 
         
                
@@ -39,7 +45,9 @@ def order(request, table_id):
             'table':Table.objects.get(id=table_id),
             'category':Category.objects.filter(status=1),
             'cart':Hotel_cart.objects.filter(table_id=table_id),
-            'table_id':table_id
+            'table_id':table_id,
+            'item':Item.objects.filter(status=1).order_by('?')
+            
         }
         return render(request, 'waiter/order.html', context)
     else:
