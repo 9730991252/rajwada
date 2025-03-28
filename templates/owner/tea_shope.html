@@ -1,0 +1,117 @@
+{% extends 'home/base.html' %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div>welcome - {{o.owner_name}}</div>
+{% include 'include/owner_menu.html' %}
+{% load home_tag %}
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add Tea Shope
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <lable>Hotel Name</lable>
+                    <input type="text" name="hotel_name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Branch Number</lable>
+                    <input type="text" name="branch_number" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Hotel Address</lable>
+                    <input type="text" name="hotel_address" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Contact Mobile</lable>
+                    <input type="number" name="mobile" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-danger" name="add_shope">Add</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .tea_shope_box{
+        width: 300px;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 0 auto;
+        text-align: center;
+    }
+  </style>
+
+<div class="text-center">
+    {% for s in tea_shope %}
+    <div class="tea_shope_box">
+        <div><b>{{s.hotel_name}}</b> शाखा - {{s.branch_number}} </div>
+        <p>{{s.hotel_address}} - {{s.contact_number}}</p>
+        <div style="display: flex;justify-content: space-evenly;">
+            <div><form method="POST">{% csrf_token %} <input type="hidden" name="id" value="{{i.id}}"> {% if s.status == 1 %}<button class="btn btn-success" type="submit" name="active">Active</button>{% else %}<button class="btn btn-danger" type="submit" name="deactive">Deactive</button>{% endif %}</form></div>
+            <div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{s.id}}">
+                    Edit
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+<!-- Modal -->
+  <div class="modal fade" id="exampleModal{{s.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit to {{s.name}}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" class="text-start">
+                <input type="hidden" name="id" value="{{s.id}}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <lable>Hotel Name</lable>
+                    <input type="text" name="hotel_name" value="{{s.hotel_name}}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Branch Number</lable>
+                    <input type="number" name="branch_number" value="{{s.branch_number}}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Hotel Address</lable>
+                    <input type="text" name="hotel_address" value="{{s.hotel_address}}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <lable>Contact Mobile</lable>
+                    <input type="number" name="mobile" value="{{s.contact_number}}" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" name="edit_shope">Edit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

@@ -25,6 +25,14 @@
                 <input type="text" name="name" class="form-control" required>
             </div>
             <div class="mb-3">
+              <select class="form-select" name="branch" aria-label="Default select example">
+                <option value="" selected>Select Branch</option>
+                {% for s in tea_shope %}
+                  <option value="{{s.id}}"><p>{{s.hotel_name}} - शाखा - {{s.branch_number}}</p></option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
                 <label for="">Mobile</label>
                 <input type="number" name="mobile" class="form-control" required>
             </div>
@@ -82,6 +90,14 @@
             <div class="mb-3">
                 <label for="">Name</label>
                 <input type="text" name="name" value="{{e.name}}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <select class="form-select" name="branch" aria-label="Default select example" required>
+                <option value="">Select Branch</option>
+                {% for s in tea_shope %}
+                  <option value="{{s.id}}" {% if s.id == e.tea_shope_id %} selected {% endif %} ><p>{{s.hotel_name}} - शाखा - {{s.branch_number}}</p></option>
+                {% endfor %}
+              </select>
             </div>
             <div class="mb-3">
                 <label for="">mobile</label>

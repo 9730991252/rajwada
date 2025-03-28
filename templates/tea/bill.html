@@ -3,7 +3,7 @@
 {% endblock head %}
 {% block content %}
 {% load home_tag %}
-<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total %}
+<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total e.tea_shope_id %}
 </b></div>
 
 
@@ -216,6 +216,7 @@ function oninput_add_to_cart(id,price){
     method: "GET",
     data:{
       employee_id:'{{e.id}}',
+      shope_id:'{{e.shope_id}}',
       item_id:id,
       price:price,
       qty:qty,
@@ -262,6 +263,7 @@ function add_to_cart(id,price){
     method: "GET",
     data:{
       employee_id:'{{e.id}}',
+      shope_id:'{{e.shope_id}}',
       item_id:id,
       price:price,
       qty:1,
@@ -300,6 +302,7 @@ $.ajax({
     method: "GET",
     data:{
       employee_id:'{{e.id}}',
+      shope_id:'{{e.shope_id}}',
       item_id:id,
       price:price,
       qty:qty,
@@ -345,6 +348,7 @@ if (qty == ''){
     method: "GET",
     data:{
       employee_id:'{{e.id}}',
+      shope_id:'{{e.shope_id}}',
       item_id:id,
       price:price,
       qty:qty,

@@ -127,6 +127,7 @@ def add_item_to_cart(request):
     if request.method == 'GET':
         employee_id = request.GET['employee_id']
         item_id = request.GET['item_id']
+        shope_id = request.GET['shope_id']
         price = request.GET['price']
         qty = request.GET['qty']
         total_amount = request.GET['total_amount']
@@ -139,6 +140,7 @@ def add_item_to_cart(request):
         else:
             Cart(
                 employee_id=employee_id,
+                tea_shope_id=shope_id,
                 item_id = item_id,
                 price=price,
                 qty=qty,

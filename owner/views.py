@@ -54,6 +54,46 @@ def owner_home(request):
     else:
         return redirect('/login/')
     
+def tea_shope(request):
+    if request.session.has_key('owner_mobile'):
+        mobile = request.session['owner_mobile']
+        o = Owner.objects.filter(mobile=mobile, status=1).first()       
+        if 'add_shope'in request.POST:
+            hotel_name = request.POST.get('hotel_name') 
+            hotel_address = request.POST.get('hotel_address') 
+            h_mobile = request.POST.get('mobile') 
+            branch_number = request.POST.get('branch_number')
+            if Tea_shope.objects.filter(contact_number=h_mobile).exists():
+                pass
+            else:
+                Tea_shope(
+                    hotel_name=hotel_name,
+                    hotel_address=hotel_address,
+                    contact_number=h_mobile,
+                    branch_number=branch_number
+                ).save()
+            return redirect('tea_shope')
+        if 'edit_shope'in request.POST:
+            id = request.POST.get('id')
+            hotel_name = request.POST.get('hotel_name')
+            hotel_address = request.POST.get('hotel_address')
+            h_mobile = request.POST.get('mobile')
+            branch_number = request.POST.get('branch_number')
+            t = Tea_shope.objects.filter(id=id).first()
+            t.hotel_name = hotel_name
+            t.hotel_address = hotel_address
+            t.contact_number = h_mobile
+            t.branch_number = branch_number
+            t.save()
+            return redirect('tea_shope')
+        context={
+            'o':o,
+            'tea_shope':Tea_shope.objects.all(),
+        }
+        return render(request, 'owner/tea_shope.html', context)
+    else:
+        return redirect('/login/')
+    
 @csrf_exempt
 def report(request):
     if request.session.has_key('owner_mobile'):
@@ -108,10 +148,12 @@ def tea_employee(request):
             name = request.POST.get('name')
             mobile = request.POST.get('mobile')
             pin = request.POST.get('pin')
+            branch = request.POST.get('branch')
             Tea_employee(
                 name=name,
                 mobile = mobile,
                 pin = pin,
+                tea_shope_id = branch
             ).save()
             return redirect('tea_employee')
         if 'edit_tea_employee'in request.POST:
@@ -119,10 +161,12 @@ def tea_employee(request):
             name = request.POST.get('name')
             mobile = request.POST.get('mobile')
             pin = request.POST.get('pin')
+            branch = request.POST.get('branch')
             w = Tea_employee.objects.filter(id=id).first()
             w.name = name
             w.mobile = mobile
             w.pin = pin
+            w.tea_shope_id = branch
             w.save()
             return redirect('tea_employee')
         if 'active'in request.POST:
@@ -138,7 +182,8 @@ def tea_employee(request):
             w.save()        
         context={
             'o':o,
-            'tea_employee':Tea_employee.objects.all()
+            'tea_employee':Tea_employee.objects.all(),
+            'tea_shope':Tea_shope.objects.filter(status=1),
         }
         return render(request, 'owner/tea_employee.html', context)
     else:

@@ -22,7 +22,7 @@ def select_category_items(request, category_id):
         e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
         if e:
             item = []
-            for i in Tea_item.objects.filter(status=1):
+            for i in Tea_item.objects.filter(status=1, tea_shope_id=e.tea_shope_id):
                 selected_status = 0
                 if Select_category_item.objects.filter(item_id=i.id,category_id=category_id,status = 1):
                     selected_status = 1 
@@ -44,6 +44,7 @@ def category(request):
         if 'add_category'in request.POST:
             name = request.POST.get('name')
             Tea_category(
+                tea_shope_id=e.tea_shope_id,
                 name=name,
             ).save()
             return redirect('category')
@@ -75,7 +76,7 @@ def category(request):
             return redirect('category')        
         context={
             'e':e,
-            'category':Tea_category.objects.all()
+            'category':Tea_category.objects.filter(tea_shope_id=e.tea_shope_id)
         }
         return render(request, 'tea/category.html', context)
     else:
@@ -94,8 +95,8 @@ def report(request):
             to_date = request.POST['to_date']
             total_amount = 0
             for i in Tea_item.objects.all():
-                qty = OrderDetail.objects.filter(item_id=i.id,date__range=[from_date, to_date] ).aggregate(Sum('qty'))['qty__sum']
-                total_price = OrderDetail.objects.filter(item_id=i.id, date__range=[from_date, to_date]).aggregate(Sum('total_price'))['total_price__sum']
+                qty = OrderDetail.objects.filter(tea_shope_id=e.tea_shope_id,item_id=i.id,date__range=[from_date, to_date] ).aggregate(Sum('qty'))['qty__sum']
+                total_price = OrderDetail.objects.filter(tea_shope_id=e.tea_shope_id,item_id=i.id, date__range=[from_date, to_date]).aggregate(Sum('total_price'))['total_price__sum']
                 if total_price == None:
                     total_price = 0
                 total_amount += total_price
@@ -118,7 +119,7 @@ def completed_bill(request):
         e = Tea_employee.objects.filter(mobile=mobile, status=1).first()
         context={
             'e':e,
-            'bill':OrderMaster.objects.all().order_by('-id'),
+            'bill':OrderMaster.objects.filter(tea_shope_id=e.tea_shope_id).order_by('-id'),
         }
         return render(request, 'tea/completed_bill.html', context)
     else:
@@ -132,21 +133,21 @@ def profile(request):
             hotel_name = request.POST['hotel_name']
             hotel_address = request.POST['hotel_address']        
             mobile = request.POST['mobile']
-            if Tea_profile.objects.all().exists():
-                t = Tea_profile.objects.all().last()
+            if Tea_shope.objects.all().exists():
+                t = Tea_shope.objects.all().last()
                 t.hotel_name = hotel_name
                 t.hotel_address = hotel_address
                 t.contact_number = mobile
                 t.save()
             else:
-                Tea_profile(
+                Tea_shope(
                     hotel_name = hotel_name,
                     hotel_address = hotel_address,
                     contact_number = mobile, 
                 ).save()
         context={
             'e':e ,
-            'profile':Tea_profile.objects.all().last(),
+            'profile':Tea_shope.objects.all().last(),
             'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
 
         }
@@ -163,6 +164,7 @@ def tea_item(request):
             name = request.POST.get('name')
             price = request.POST.get('price')
             Tea_item(
+                tea_shope_id=e.tea_shope_id,
                 name=name,
                 price=price
             ).save()
@@ -190,8 +192,7 @@ def tea_item(request):
             return redirect('tea_item')        
         context={
             'e':e,
-            'item':Tea_item.objects.all(),
-            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],        
+            'item':Tea_item.objects.filter(tea_shope_id=e.tea_shope_id),
             }
         return render(request, 'tea/tea_item.html', context)
     else:
@@ -215,20 +216,23 @@ def bill(request):
             if 'complete_order'in request.POST:
                 amount = Cart.objects.filter(employee_id=e.id).aggregate(Sum('total_amount'))
                 amount = amount['total_amount__sum']
-                order_filter = OrderMaster.objects.filter().count()
+                order_filter = OrderMaster.objects.filter(tea_shope_id=e.tea_shope_id).count()
                 order_filter += 1
                 OrderMaster(
+                    tea_shope_id=e.tea_shope_id,
                     employee_id = e.id,
                     total_price=amount,
                     order_filter=order_filter
                 ).save()
-                om = OrderMaster.objects.filter(order_filter=order_filter).first()
+                om = OrderMaster.objects.filter(tea_shope_id=e.tea_shope_id,order_filter=order_filter).first()
                 cart = Cart.objects.filter(employee_id=e.id)
                 if cart:
                     for c in cart:
                         OrderDetail(
                             employee_id = e.id,
+                            tea_shope_id=e.tea_shope_id,
                             item_id=c.item_id,
+                            item_name=c.item.name,
                             qty=c.qty,
                             price=c.price,
                             total_price=c.total_amount,
@@ -253,15 +257,16 @@ def completed_view_bill(request, order_filter):
     if request.session.has_key('tea_mobile'):
         mobile = request.session['tea_mobile']
         e = Tea_employee.objects.filter(mobile=mobile, status=1).first()        
-        o = OrderDetail.objects.filter(order_filter=order_filter).aggregate(Sum('total_price'))
+        o = OrderDetail.objects.filter(tea_shope_id=e.tea_shope_id, order_filter=order_filter).aggregate(Sum('total_price'))
+        print(e.tea_shope_id)
         
         context={
             'e':e,
-            'order_master':OrderMaster.objects.filter(order_filter=order_filter).first(),
-            'order_detail':OrderDetail.objects.filter(order_filter=order_filter),
-            'tea':Tea_profile.objects.all().first(),
+            'order_master':OrderMaster.objects.filter(tea_shope_id=e.tea_shope_id, order_filter=order_filter).first(),
+            'order_detail':OrderDetail.objects.filter(tea_shope_id=e.tea_shope_id, order_filter=order_filter),
+            'tea':e.tea_shope,
             'total_amount':o['total_price__sum'],
-            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today()).aggregate(Sum('total_price'))['total_price__sum'],
+            'todayes_total':OrderMaster.objects.filter(ordered_date=date.today(), tea_shope_id=e.tea_shope_id).aggregate(Sum('total_price'))['total_price__sum'],
         }
         return render(request, 'tea/completed_view_bill.html', context)
     else:

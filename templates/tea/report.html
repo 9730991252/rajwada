@@ -4,7 +4,7 @@
 {% block content %}
 {% load home_tag %}
 <div class="hide">
-<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total %}
+<div>welcome - {{e.name}} &nbsp; <b>Todayes Total  Rs.{% todayes_tea_total e.tea_shope_id %}
 </b></div>
 
 {% include 'include/tea_menu.html' %}

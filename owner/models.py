@@ -2,6 +2,13 @@ from django.db import models
 from embed_video.fields import EmbedVideoField 
 
 # Create your models here.
+class Tea_shope(models.Model):
+    hotel_name = models.CharField(max_length=100,default='')
+    contact_number=models.IntegerField(unique=True)
+    hotel_address = models.CharField(max_length=100,default='')
+    status=models.IntegerField(default=1)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    branch_number = models.IntegerField(null=True)
 class Owner(models.Model):
     hotel_name = models.CharField(max_length=100,default='')
     owner_name=models.CharField(max_length=100)
@@ -99,3 +106,4 @@ class luckydrow_winner(models.Model):
     date = models.DateField(auto_now_add=True)
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
+    
