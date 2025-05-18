@@ -37,6 +37,5 @@ def data(request):
             c = json.loads(message.value.decode())
             consumed_message.append(c)
             break
-        print(consumed_message)
         d = consumed_message[0]
     return JsonResponse({'latitude': d['lat'],'longitude':d['lon']})
