@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Location</title>
+  <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/684/684908.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px #00f0ff;
+    }
+
+    .map-card {
+      width: 90%;
+      max-width: 1000px;
+      height: 600px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1><i class="fas fa-map-marker-alt"></i> Live Location Tracker</h1>
+
+  <div class="map-card">
+    <div id="map"></div>
+  </div>
+
+  <footer>&copy; 2025 Live Location System</footer>
+
+  <script>
+    let map, marker;
+
+    function initMap() {
+      const defaultLocation = { lat: 19.0760, lng: 72.8777 }; // Mumbai
+
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultLocation,
+        zoom: 14,
+        styles: [
+          {
+            featureType: "all",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#ffffff" }]
+          },
+          {
+            featureType: "all",
+            elementType: "labels.text.stroke",
+            stylers: [{ color: "#000000" }, { lightness: 13 }]
+          },
+          {
+            featureType: "administrative",
+            elementType: "geometry.fill",
+            stylers: [{ color: "#000000" }]
+          },
+          {
+            featureType: "administrative",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#144b53" }, { lightness: 14 }, { weight: 1.4 }]
+          },
+          {
+            featureType: "landscape",
+            elementType: "all",
+            stylers: [{ color: "#08304b" }]
+          },
+          {
+            featureType: "poi",
+            elementType: "geometry",
+            stylers: [{ color: "#0c4152" }, { lightness: 5 }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry.fill",
+            stylers: [{ color: "#000000" }]
+          },
+          {
+            featureType: "road.highway",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#0b434f" }, { lightness: 25 }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry.fill",
+            stylers: [{ color: "#000000" }]
+          },
+          {
+            featureType: "road.arterial",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#0b3d51" }, { lightness: 16 }]
+          },
+          {
+            featureType: "road.local",
+            elementType: "geometry",
+            stylers: [{ color: "#000000" }]
+          },
+          {
+            featureType: "transit",
+            elementType: "all",
+            stylers: [{ color: "#146474" }]
+          },
+          {
+            featureType: "water",
+            elementType: "all",
+            stylers: [{ color: "#021019" }]
+          }
+        ]
+      });
+
+      marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        title: "You are here",
+        animation: google.maps.Animation.DROP
+      });
+
+      // Optionally: update marker to current location if allowed
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition((position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          marker.setPosition(pos);
+          map.setCenter(pos);
+        }, () => {
+          alert("Unable to fetch your location.");
+        });
+      }
+    }
+
+    window.initMap = initMap;
+  </script>
+
+  <!-- Defer map load -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjnOxaZtt0BOEhFrMOy1HgmmS9gqUH7gk&callback=initMap"></script>
+
+</body>
+</html>

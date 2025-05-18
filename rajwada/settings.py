@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'embed_video',
     'waiter',
     'chef',
-    'tea'
+    'tea',
+    'live_location'
 ]
 
 MIDDLEWARE = [

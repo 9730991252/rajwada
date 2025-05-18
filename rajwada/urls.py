@@ -28,4 +28,6 @@ urlpatterns = [
     path('waiter/', include('waiter.urls')),
     path('chef/', include('chef.urls')),
     path('tea/', include('tea.urls')),
+    path('l/', include('live_location.urls')),
+    
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
