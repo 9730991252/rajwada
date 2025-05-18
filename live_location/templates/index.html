@@ -8,7 +8,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjwpTFKPrz1g7TrQAfkH6OnbGbLZU0A9s"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     * {
       box-sizing: border-box;
@@ -65,6 +67,7 @@
   </div>
 
   <footer>&copy; 2025 Live Location System</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
   <script>
     let map, marker;
@@ -151,27 +154,52 @@
         animation: google.maps.Animation.DROP
       });
 
-      // Optionally: update marker to current location if allowed
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition((position) => {
-        console.lor('latitude', position.coords.latitude)
-        console.lor('longitude', position.coords.longitude)
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          marker.setPosition(pos);
-          map.setCenter(pos);
-        }, () => {
-          alert("Unable to fetch your location.");
-        });
-      }
+
     }
+
+    setInterval(function(){
+    $.ajax({
+            url: "{% url 'data' %}",
+            method: "GET",
+            data:{
+                words:'hi'
+            },
+            success: function(res){
+                console.log(res)
+                var newLocation = {
+                    lat: Number(res.latitude),
+                    lng : Number(res.longitude)
+                }
+                marker.setPosition(newLocation)
+                map.setCenter(newLocation)
+
+                
+                
+            }
+        })
+},1700);
 
     window.initMap = initMap;
   </script>
 
-  <!-- Defer map load -->
+  <!-- Defer map load
+        // Optionally: update marker to current location if allowed
+      // if (navigator.geolocation) {
+      //   navigator.geolocation.watchPosition((position) => {
+      //   console.lor('latitude', position.coords.latitude)
+      //   console.lor('longitude', position.coords.longitude)
+      //     const pos = {
+      //       lat: position.coords.latitude,
+      //       lng: position.coords.longitude
+      //     };
+      //     marker.setPosition(pos);
+      //     map.setCenter(pos);
+      //   }, () => {
+      //     alert("Unable to fetch your location.");
+      //   });
+      // } 
+  
+  -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjnOxaZtt0BOEhFrMOy1HgmmS9gqUH7gk&callback=initMap"></script>
 
 </body>
