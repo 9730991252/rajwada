@@ -22,8 +22,8 @@ def produce_lat_lon(request):
     if request.method == 'GET':
         lat = request.GET['lat']
         lon = request.GET['lon']
-        producer.send('location', {'lat': lat, 'lon': lon})
         producer.flush()
+        producer.send('location', {'lat': lat, 'lon': lon})
         return JsonResponse({'latitude': 'status'})
     
 def data(request):
