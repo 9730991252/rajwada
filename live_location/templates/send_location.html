@@ -235,6 +235,8 @@
                             lon:longitude
                         },
                         success: function(res){
+                          console.log(res)
+                          document.getElementById("message").innerHTML = `${res['lat']}, ${res['lon']}`
                         }
                     })
 

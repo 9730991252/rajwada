@@ -30,15 +30,8 @@ def produce_lat_lon(request):
     if request.method == 'GET':
         lat = request.GET.get('lat')
         lon = request.GET.get('lon')
-
-        if not lat or not lon:
-            return JsonResponse({'error': 'Latitude and longitude required'}, status=400)
-
-        try:
-            producer.send(KAFKA_TOPIC, {'lat': lat, 'lon': lon})
-            return JsonResponse({'status': 'success', 'lat': lat, 'lon': lon})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        producer.send(KAFKA_TOPIC, {'lat': lat, 'lon': lon})
+        return JsonResponse({'lat': lat, 'lon': lon})
 
 # Get latest lat/lon from Kafka
 def data(request):
