@@ -227,10 +227,6 @@
         navigator.geolocation.getCurrentPosition((position) => {
           let latitude = position.coords.latitude;
           let longitude = position.coords.longitude;
-
-        if (latitude_last !== latitude && longitude_last !== longitude){
-            latitude_last = latitude 
-            longitude_last = longitude 
                     $.ajax({
                         url: "{% url 'produce_lat_lon' %}",
                         method: "GET",
@@ -241,7 +237,6 @@
                         success: function(res){
                         }
                     })
-        }
 
         }, (error) =>{
                document.getElementById("message").innerHTML = (error.message);
