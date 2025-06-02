@@ -23,6 +23,7 @@ def produce_lat_lon(request):
         lat = request.GET['lat']
         lon = request.GET['lon']
         producer.send('location', {'lat': lat, 'lon': lon})
+        producer.flush()
         return JsonResponse({'latitude': 'status'})
     
 def data(request):
@@ -36,6 +37,9 @@ def data(request):
         for message in consumer:
             c = json.loads(message.value.decode())
             consumed_message.append(c)
+            print(c)
             break
+            
+        
         d = consumed_message[0]
     return JsonResponse({'latitude': d['lat'],'longitude':d['lon']})
